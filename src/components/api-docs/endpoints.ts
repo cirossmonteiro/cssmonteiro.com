@@ -15,11 +15,14 @@ export const ENDPOINTS: IEndpoint[] = [
       username: "dan_abramov"
     }
   },
-  // {
-  //   method: "GET",
-  //   path: "/api/selenium/tiktok/:username",
-  //   description: "Retrieve basic information from Tiktok user's profile."
-  // }
+  {
+    method: "GET",
+    path: "/selenium/tiktok/:username",
+    description: "Retrieve basic information from Tiktok user's profile.",
+    example: {
+      username: "bbc"
+    }
+  }
 ]
 
 export interface IEndpoint {

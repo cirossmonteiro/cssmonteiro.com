@@ -6,6 +6,7 @@ import { Controller, useForm } from "react-hook-form";
 import styled from "styled-components";
 import API from "../../../api";
 import { IEndpoint } from "../endpoints";
+import JSONPrettifier from "../../json-prettifier";
 
 interface IProps extends IEndpoint {
   className?: string;
@@ -107,7 +108,8 @@ const Endpoint = (props: IProps) => {
       </Form>
 
       <ResponseData className="p-2">
-        {responseData}
+        {/* {responseData} */}
+        {responseData.length !== 0 && <JSONPrettifier obj={JSON.parse(responseData)} />}
       </ResponseData>
     </Container>
   )

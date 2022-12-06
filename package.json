@@ -37,6 +37,7 @@
     "start-careful-ciro": "PORT=3003 REACT_APP_CAREFUL=1 npm run start-ciro",
     "start": "ttab npm run start-dangerous-ciro && ttab npm run start-careful-fake && ttab npm run start-careful-ciro && npm run start-dangerous-fake",
     "build": "npm run build-source-code-page && react-scripts build",
+    "build-dangerous-fake": "REACT_APP_SEGMENT=fake npm run build",
     "build-source-code-page": "python3 build_source_code_page.py",
     "serve": "npm run build && serve build",
     "test": "react-scripts test",
