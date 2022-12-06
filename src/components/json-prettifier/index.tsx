@@ -1,27 +1,77 @@
-interface IProps {
-  obj: { [params: string]: any } | any[];
+import styled from "styled-components";
+
+interface IRenderValuesOptions {
+  hyperlink?: boolean;
+  key?: string;
 }
 
-const renderValue = (value: any) => {
+interface IProps {
+  obj: { [params: string]: any } | any[];
+  options?: IRenderValuesOptions
+}
+
+const twitterProfileHyperlink = (value: string) => {
+  return `<a href="https://www.twitter.com/${value}" target="_blank">@${value}</a>`;
+}
+
+const renderValue = (value: any, options?: IRenderValuesOptions) => {
+  const {
+    hyperlink = false,
+    key
+  } = (options || {});
+
   if (typeof value === "number") {
-    return <span>{value}</span>;
+    return <span className="number">{value}</span>;
   } else if (typeof value === "string") {
-    return <span>{value}</span>;
+    if (hyperlink) {
+      if (value.slice(0, 4) === "http") {
+        return <a href={value} target="_blank">{value}</a>;
+      } else if (value.includes("@")) {
+        const ats = [];
+        let end = 0, start = value.indexOf("@", end);
+        while(start !== -1) {
+          end = value.indexOf(" ", start+1); // to-do: consider endline, etc
+          ats.push({ start, end, username: value.slice(start+1, end) });
+          start = value.indexOf("@", end);
+        }
+
+        ats.forEach(at => {
+          value = value.replace(`@${at.username}`, twitterProfileHyperlink(at.username));
+        });
+
+        return <span dangerouslySetInnerHTML={{ __html: value }} />;
+        // to-do: change color for datetime
+      } else if (key && (key.toLocaleLowerCase().includes('date') || key.toLocaleLowerCase().includes('time')) || value.slice(-1) === 'Z') {
+        return <span className="number">{value}</span>;
+      }
+      else {
+        return <span>{value}</span>
+      }
+    } else {
+      return <span>{value}</span>;
+    }
   } else if (typeof value === "boolean") {
     return <span>{value}</span>;
   } else if (typeof value === "object") {
     if (value === null) {
-      return <span>{value}</span>;
+      return <span className="null">null</span>;
     } else if (Array.isArray(value)) {
       return value.map((v, index) => {
         return (
           <div key={index}>
-            {renderValue(v)}
+            {renderValue(v, options)}
           </div>
         );
       });
     } else {
-      return <span><JSONPrettifier obj={value} /></span>;
+      return (
+        <>
+          {/* {"{"} */}
+          <br />
+          <JSONPrettifier obj={value} options={options} />
+          {/* {"}"} */}
+        </>
+      );
     }
   }
 }
@@ -31,7 +81,7 @@ const JSONPrettifier = (props: IProps) => {
     ? props.obj.map((value, index) => {
         return (
           <div key={index}>
-            {renderValue(value)}
+            {renderValue(value, props.options)}
           </div>
         );
       })
@@ -41,17 +91,28 @@ const JSONPrettifier = (props: IProps) => {
           <span>{key}</span>
           :
           <span className="ms-1">
-            {renderValue(value)}
+            {renderValue(value, { ...props.options, key })}
           </span>
         </div>
       )
     });
 
   return (
-    <div>
+    <Container>
       {jsx}
-    </div>
+    </Container>
   )
 }
+
+const Container = styled.div`
+  .number {
+    color: green;
+    font-weight: bold;
+  }
+
+  .null {
+    color: gray;
+  }
+`;
 
 export default JSONPrettifier;

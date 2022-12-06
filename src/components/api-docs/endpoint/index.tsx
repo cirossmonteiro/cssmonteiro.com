@@ -1,5 +1,5 @@
 import { Button, Form, Input } from "antd";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faCopy, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useCallback, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -70,6 +70,10 @@ const Endpoint = (props: IProps) => {
     
   }, [props.path, props.method, props.example, isLoading]);
 
+  const handleCopyToClipboard = useCallback(() => {
+    navigator.clipboard.writeText(responseData);
+  }, [responseData]);
+
   return (
     <Container className={`p-3 m-2 d-flex flex-column ${props?.className || ''}`} method={props.method}>
       <div className="d-flex align-items-center">
@@ -107,9 +111,11 @@ const Endpoint = (props: IProps) => {
         </Form.Item>
       </Form>
 
-      <ResponseData className="p-2">
+      <ResponseData className="p-2 d-flex">
+        <FontAwesomeIcon className="fa-icon me-2" icon={faCopy} onClick={handleCopyToClipboard} />
+
         {/* {responseData} */}
-        {responseData.length !== 0 && <JSONPrettifier obj={JSON.parse(responseData)} />}
+        {responseData.length !== 0 && <JSONPrettifier obj={JSON.parse(responseData)} options={{ hyperlink: true }} />}
       </ResponseData>
     </Container>
   )
@@ -141,8 +147,16 @@ const Container = styled.div<{
 `;
 
 const ResponseData = styled.div`
+  min-height: 50px;
+  position: relative;
   border: 1px solid gray;
   overflow: auto;
+
+  .fa-icon {
+    position: absolute;
+    right: 0;
+    cursor: pointer;
+  }
 `;
 
 export default Endpoint;

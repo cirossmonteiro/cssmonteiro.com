@@ -26,7 +26,7 @@ const TextareaDynamic = (props: IProps) => {
     return () => {
       clearInterval(blinkingIntervalId.current as NodeJS.Timer);
     }
-  }, [props.text, props.size]);
+  }, [props.size]);
 
   useEffect(() => {
     typingIntervalId.current = setInterval(() => {
