@@ -5,7 +5,8 @@ export const ENDPOINTS: IEndpoint[] = [
     description: "Retrieve basic information from Twitter user's profile.",
     example: {
       username: "bbc"
-    }
+    },
+    ui: "/#/twitter.com/:username"
   },
   {
     method: "GET",
@@ -29,5 +30,6 @@ export interface IEndpoint {
   method: 'GET' | 'POST';
   path: string;
   description: string;
-  example?: { [params: string]: string; }
+  example?: { [params: string]: string; };
+  ui?: string;
 }

@@ -1,12 +1,14 @@
-import { Button, Form, Input } from "antd";
-import { faCopy, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { Button, Form, Input, Switch } from "antd";
+import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useCallback, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import styled from "styled-components";
-import API from "../../../api";
+
+import API, { startJob } from "../../../api";
 import { IEndpoint } from "../endpoints";
 import JSONPrettifier from "../../json-prettifier";
+import Loading from "../../loading";
 
 interface IProps extends IEndpoint {
   className?: string;
@@ -24,29 +26,42 @@ const MAP_METHOD_COLOR = {
   }
 }
 
+type TObj<T=string> = { [params: string]: T; };
+
+const buildParams = (path: string, values: TObj, isJob: boolean): [string, TObj] => {
+  const params: TObj = {};
+  console.log(411, params, path, values);
+  Object.entries(values).forEach(([key, value]) => {
+    if(path.includes(`:${key}`)) {
+      path = path.replace(`:${key}`, value);
+    } else {
+      params[key] = value;
+    }
+  });
+
+  if (isJob) {
+    path = `/jobs${path}`;
+  }
+  console.log(412, params, path, values);
+  return [path, params];
+}
+
 const Endpoint = (props: IProps) => {
   const [responseData, setResponseData] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isJob, setIsJob] = useState<boolean>(false);
+  const [jobId, setJobId] = useState<string>("");
   const abortControllerRef = useRef<AbortController | null>();
 
-  const { handleSubmit, control, reset } = useForm<{ [params: string]: string; }>({
+  const { handleSubmit, control, reset } = useForm<TObj>({
     defaultValues: props.example
   });
 
-  const handleRequest = useCallback(async (values: { [params: string]: string; }) => {
+  const handleRequest = useCallback(async (values: TObj) => {
     if (isLoading && abortControllerRef.current) {
       (abortControllerRef.current as any).abort();
     } else {
-      const params: { [params: string]: string; } = {};
-      let url = props.path.slice();
-      Object.keys(values).forEach(key => {
-        const value = values[key];
-        if(url.includes(`:${key}`)) {
-          url = url.replace(`:${key}`, value);
-        } else {
-          params[key] = value;
-        }
-      });
+      const [url, params] = buildParams(props.path, values, isJob);
       abortControllerRef.current = new AbortController();
       setIsLoading(true);
       try {
@@ -56,7 +71,13 @@ const Endpoint = (props: IProps) => {
           signal: abortControllerRef.current.signal,
           url
         });
-        setResponseData(JSON.stringify(response.data));
+        if (isJob) {
+          const { jobId } = response.data;
+          setJobId(jobId);
+          startJob(jobId, setResponseData);
+        } else {
+          setResponseData(JSON.stringify(response.data));
+        }
       } catch (err) {
         if ((err as any)?.code === "ERR_CANCELED") {
           console.log(`HTTP request's been canceled: ${err}.`);
@@ -68,7 +89,7 @@ const Endpoint = (props: IProps) => {
       abortControllerRef.current = null;
     }
     
-  }, [props.path, props.method, props.example, isLoading]);
+  }, [props.path, props.method, props.example, isLoading, isJob]);
 
   const handleCopyToClipboard = useCallback(() => {
     navigator.clipboard.writeText(responseData);
@@ -90,7 +111,11 @@ const Endpoint = (props: IProps) => {
       
       <Form style={{maxWidth: 200}}
         onFinish={handleSubmit(handleRequest)}>
-        <h4 className="mt-2">Test</h4>
+        <div className="my-3 d-flex align-items-center">
+          <h4 className="m-0">Test</h4>
+          <Switch className="ms-2" checked={isJob} onChange={setIsJob} />
+          {isJob && <Input className="ms-2" value={jobId} placeholder="jobId" />}
+        </div>
         {Object.keys(props?.example || {} ).map(key => {
           return (
             <Form.Item key={key} label={key}>
@@ -107,7 +132,7 @@ const Endpoint = (props: IProps) => {
           <Button htmlType="submit">
             {isLoading ? 'Stop' : 'Start'} request
           </Button>
-          {isLoading && <FontAwesomeIcon className="ms-2" icon={faSpinner} />}
+          {isLoading && <Loading />}
         </Form.Item>
       </Form>
 

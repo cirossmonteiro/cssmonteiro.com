@@ -1,8 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import {
-  BrowserRouter,
-  createBrowserRouter,
   HashRouter,
   Route,
   Routes,
@@ -14,11 +12,12 @@ import reportWebVitals from './reportWebVitals';
 import SourceCodePage from './source_code_page';
 import Snake from './components/snake';
 import FakeWhatsapp from './components/fake-whatsapp';
-import BigWall from './components/big-wall';
-import Account from './components/account';
+// import BigWall from './components/big-wall';
+// import Account from './components/account';
 import styled from 'styled-components';
-import PixelsArt from './components/pixels-art';
+// import PixelsArt from './components/pixels-art';
 import APIDocs from './components/api-docs';
+import TwitterProfile from './components/twitter/profile';
 
 const segment = process.env.REACT_APP_SEGMENT;
 const careful = parseInt(process.env.REACT_APP_CAREFUL || '0') === 1;
@@ -44,6 +43,7 @@ root.render(
           <Route path="/snake" element={<Snake />} />
           <Route path="/api-docs" element={<APIDocs />} />
           <Route path="/fake-whatsapp" element={<FakeWhatsapp />} />
+          <Route path="/twitter.com/:username" element={<TwitterProfile />} />
           {/* <Route path="/mongoose" element={<BigWall />} />
           <Route path="/account" element={<Account />} />
           <Route path="/pixels-art" element={<PixelsArt />} /> */}
