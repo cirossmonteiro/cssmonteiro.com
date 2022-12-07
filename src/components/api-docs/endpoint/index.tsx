@@ -71,12 +71,10 @@ const Endpoint = (props: IProps) => {
           signal: abortControllerRef.current.signal,
           url
         });
+        setResponseData(JSON.stringify(response.data));
         if (isJob) {
           const { jobId } = response.data;
           setJobId(jobId);
-          startJob(jobId, setResponseData);
-        } else {
-          setResponseData(JSON.stringify(response.data));
         }
       } catch (err) {
         if ((err as any)?.code === "ERR_CANCELED") {
