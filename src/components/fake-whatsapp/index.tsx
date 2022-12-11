@@ -1,7 +1,8 @@
 import { Button, DatePicker, Input, Select, Switch, Table, Tooltip } from "antd";
 import moment from "moment";
-import { useCallback, useState } from "react";
+import { ChangeEvent, useCallback, useState } from "react";
 import styled from "styled-components";
+import { v4 as uuid4 } from 'uuid';
 
 import DragSplitView from "../drag-split-view";
 
@@ -22,14 +23,17 @@ interface IUser {
   originalName?: string;
   picture?: string;
   color: string;
+  id: string;
 }
 
 const initialUser: IUser = {
+  id: uuid4(),
   cellphone: '+5500123456789',
-  color: '#000000'
+  color: '#000000',
 }
 
 interface IMessage {
+  id: string;
   contents: string;
   reactions: IReaction[];
   timestamp: string;
@@ -38,6 +42,7 @@ interface IMessage {
 }
 
 const initialMessage: IMessage = {
+  id: uuid4(),
   contents: '',
   reactions: [],
   timestamp: new Date().toISOString(),
@@ -54,6 +59,7 @@ const WHATSAPP_COLORS: RGB[] = [
 ]
 
 const User1: IUser = {
+  id: uuid4(),
   cellphone: '+5521987654321',
   savedName: 'Assessor de gabinete',
   picture: 'https://br.web.img3.acsta.net/pictures/18/07/25/22/08/5179819.jpg',
@@ -61,6 +67,7 @@ const User1: IUser = {
 }
 
 const User2: IUser = {
+  id: uuid4(),
   cellphone: '+5521912345678',
   originalName: 'Político aleatório',
   picture: 'https://br.web.img3.acsta.net/c_310_420/medias/nmedia/18/95/02/75/20372972.jpg',
@@ -68,6 +75,7 @@ const User2: IUser = {
 }
 
 const Message1: IMessage = {
+  id: uuid4(),
   contents: 'Chefe, perdi a cópia do projeto de lei que será votado semana que vem.',
   reactions: [],
   timestamp: new Date().toISOString(),
@@ -75,6 +83,7 @@ const Message1: IMessage = {
 }
 
 const Message2: IMessage = {
+  id: uuid4(),
   contents: 'Sabe o que significa né?',
   reactions: [],
   timestamp: new Date().toISOString(),
@@ -83,6 +92,7 @@ const Message2: IMessage = {
 }
 
 const Message3: IMessage = {
+  id: uuid4(),
   contents: 'Não, o quê?',
   reactions: [],
   timestamp: new Date().toISOString(),
@@ -91,6 +101,7 @@ const Message3: IMessage = {
 }
 
 const Message4: IMessage = {
+  id: uuid4(),
   contents: 'Que você tem uma semana pra achar isso kkk',
   reactions: [],
   timestamp: new Date().toISOString(),
@@ -100,29 +111,37 @@ const Message4: IMessage = {
 
 const extraZero = (s: string) =>  `${s.length === 1 ? '0' : ''}${s}`;
 
-function useObjList<T>(initialList: T[]) {
-  const [state, setState] = useState<T[]>(initialList);
+type IdT<T> = T & {
+  id: string;
+}
 
-  const onChange = useCallback((name: keyof T, index: number) => (value: any) => {
-    setState((list: any[]) => {
-      list[index][name] = value;
+function useObjList<T>(initialList: IdT<T>[]) {
+  const [state, setState] = useState<IdT<T>[]>(initialList);
+
+  const onChange = useCallback((name: keyof T, index: number) => (value: keyof T) => {
+    setState((list: IdT<T>[]) => {
+      // remark: list[index][name] had a TS warning
+      list[index] = {
+        ...list[index],
+        [name]: value
+      };
       return [ ...list ];
     });
   }, []);
 
-  const handleChange = useCallback((index: number) => (e: any) => {
+  const handleChange = useCallback((index: number) => (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    onChange(name, index)(value);
+    onChange(name as keyof T, index)(value as keyof T);
   }, []);
 
   const onDelete = useCallback((index: number) => (_: any) => {
-    setState((list: T[]) => {
+    setState((list: IdT<T>[]) => {
       return list.filter((_, i) => i !== index);
     })
   }, []);
 
-  const onPush = useCallback((newItem: T) => {
-    setState((list: T[]) => [
+  const onPush = useCallback((newItem: IdT<T>) => {
+    setState((list: IdT<T>[]) => [
       ...list,
       { ...newItem }
     ]);
@@ -132,7 +151,7 @@ function useObjList<T>(initialList: T[]) {
     editable: (name: keyof T, index: number) => {
       const value = state[index][name] as string;
       return (
-        <Tooltip title={value}>
+        <Tooltip title={value} key={String(name)}>
           <Input
             name={name as string}
             onChange={handleChange(index)}
@@ -182,7 +201,7 @@ const FakeWhatsapp = () => {
 
   const UserSelect = useCallback((messageIndex: number) => {
     return (
-      <MinWidthSelect allowClear
+      <MinWidthSelect<any> allowClear
         onChange={onChangeMessageUserIndex(messageIndex)}
         defaultValue={messages[messageIndex].userIndex}>
         {users.map((user, userIndex) => {
@@ -200,10 +219,10 @@ const FakeWhatsapp = () => {
 
   const MessageMentionSelect = useCallback((messageIndex: number) => {
     return ( 
-      <MinWidthSelect className="message-mention" allowClear
+      <MinWidthSelect<any> className="message-mention" allowClear
         onChange={onChangeMessageMention(messageIndex)}
         defaultValue={messages[messageIndex].mentionIndex}>
-        {messages.filter((_, index) => index < messageIndex).map((message, index) => {
+        {messages.filter((_, _index) => _index < messageIndex).map((message, index) => {
           return (
             <Select.Option key={index} value={index}>
               {message.contents}
@@ -293,7 +312,8 @@ const FakeWhatsapp = () => {
             <Switch className="ms-2" checked={warning} onChange={handleSetWarning} />
           </label>
           <h1>Users</h1>
-          <Table<IUser> dataSource={users} pagination={false}
+          <Table<IUser> dataSource={users} pagination={false} key="messages"
+            rowKey="id"
             columns={[
               {
                 dataIndex: 'cellphone',
@@ -314,7 +334,7 @@ const FakeWhatsapp = () => {
                 dataIndex: 'color',
                 title: 'Color',
                 render: (value, _, index) => (
-                  <MinWidthSelect onChange={onChangeUserColor(index)} defaultValue={value}>
+                  <MinWidthSelect<any> onChange={onChangeUserColor(index)} defaultValue={value} key={index}>
                     {WHATSAPP_COLORS.map(color => {
                       const rgb = rgbArrToHex(color);
                       return (
@@ -327,6 +347,7 @@ const FakeWhatsapp = () => {
                 )
               },
               {
+                dataIndex: "actions",
                 title: 'Actions',
                 render: (_, __, index) => RemovableUser(index)
               }
@@ -335,29 +356,34 @@ const FakeWhatsapp = () => {
           <Button className="mt-2" onClick={handleNewUser}>New user</Button>
 
           <h1 className="mt-5">Messages</h1>
-          <Table<IMessage> dataSource={messages} pagination={false}
+          <Table<IMessage> dataSource={messages} pagination={false} key="users"
+            rowKey="id"
             columns={[
               {
+                dataIndex: "author",
                 title: 'Author',
                 render: (_, __, index) => UserSelect(index)
               },
               {
-                title: 'Timestamp',
                 dataIndex: 'timestamp',
+                title: 'Timestamp',
                 render: (value, _, index) => (
                   <DatePicker value={moment(value)} format="YYYY-MM-DD HH:mm" showTime={true}
-                    onChange={onChangeMessageTimestamp(index)} allowClear={false}/>
+                    onChange={onChangeMessageTimestamp(index) as any} allowClear={false}/>
                 )
               },
               {
+                dataIndex: "contents",
                 title: 'Contents',
                 render: (_, __, index) => InputMessage('contents', index)
               },
               {
+                dataIndex: "mentions",
                 title: 'Message mentioned',
                 render: (_, __, index) => MessageMentionSelect(index)
               },
               {
+                dataIndex: "actions",
                 title: 'Actions',
                 render: (_, __, index) => RemovableMessage(index)
               }

@@ -24,13 +24,14 @@ const DragSplitView = (props: IProps) => {
       onMouseUp={_ => setIsHolding(false)}
       ref={ref}
     >
-      <Cursor className="d-flex justify-content-center align-items-center" width={percentage} onMouseDown={_ => setIsHolding(true)}>
+      <Cursor className="d-flex justify-content-center align-items-center"
+        width={percentage} onMouseDown={_ => setIsHolding(true)} key={1}>
         <FontAwesomeIcon icon={faArrowsLeftRightToLine} />
       </Cursor>
-      <Holder width={percentage}>
+      <Holder width={percentage} key={2}>
         {props.parts[0]}
       </Holder>
-      <Holder width={100-percentage}>
+      <Holder width={100-percentage} key={3}>
         {props.parts[1]}
       </Holder>
     </Container>

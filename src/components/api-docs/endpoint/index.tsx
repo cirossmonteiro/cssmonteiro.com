@@ -5,7 +5,7 @@ import { useCallback, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import styled from "styled-components";
 
-import API, { startJob } from "../../../api";
+import API from "../../../api";
 import { IEndpoint } from "../endpoints";
 import JSONPrettifier from "../../json-prettifier";
 import Loading from "../../loading";
@@ -30,7 +30,6 @@ type TObj<T=string> = { [params: string]: T; };
 
 const buildParams = (path: string, values: TObj, isJob: boolean): [string, TObj] => {
   const params: TObj = {};
-  console.log(411, params, path, values);
   Object.entries(values).forEach(([key, value]) => {
     if(path.includes(`:${key}`)) {
       path = path.replace(`:${key}`, value);
@@ -42,7 +41,7 @@ const buildParams = (path: string, values: TObj, isJob: boolean): [string, TObj]
   if (isJob) {
     path = `/jobs${path}`;
   }
-  console.log(412, params, path, values);
+
   return [path, params];
 }
 
@@ -53,7 +52,7 @@ const Endpoint = (props: IProps) => {
   const [jobId, setJobId] = useState<string>("");
   const abortControllerRef = useRef<AbortController | null>();
 
-  const { handleSubmit, control, reset } = useForm<TObj>({
+  const { handleSubmit, control } = useForm<TObj>({
     defaultValues: props.example
   });
 
@@ -87,7 +86,7 @@ const Endpoint = (props: IProps) => {
       abortControllerRef.current = null;
     }
     
-  }, [props.path, props.method, props.example, isLoading, isJob]);
+  }, [props.path, props.method, isLoading, isJob]);
 
   const handleCopyToClipboard = useCallback(() => {
     navigator.clipboard.writeText(responseData);
