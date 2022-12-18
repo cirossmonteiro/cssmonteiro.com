@@ -18,6 +18,7 @@ import styled from 'styled-components';
 // import PixelsArt from './components/pixels-art';
 import APIDocs from './components/api-docs';
 import TwitterProfile from './components/twitter/profile';
+import Echo from './components/echo';
 
 const segment = process.env.REACT_APP_SEGMENT;
 const careful = parseInt(process.env.REACT_APP_CAREFUL || '0') === 1;
@@ -43,6 +44,7 @@ root.render(
           <Route path="/snake" element={<Snake />} />
           <Route path="/api-docs" element={<APIDocs />} />
           <Route path="/fake-whatsapp" element={<FakeWhatsapp />} />
+          <Route path="/echo" element={<Echo />} />
           <Route path="/twitter.com/:username" element={<TwitterProfile />} />
           {/* <Route path="/mongoose" element={<BigWall />} />
           <Route path="/account" element={<Account />} />

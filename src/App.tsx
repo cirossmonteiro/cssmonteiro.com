@@ -32,6 +32,7 @@ const App = () => {
         {!careful && <NavLink to="/source" className="m-1 dynamic-color" >source code</NavLink>}
         <NavLink to="/api-docs" className="m-1 dynamic-color" >API Docs</NavLink>
         <NavLink to="/fake-whatsapp" className="m-1 dynamic-color" >Fake WhatsApp</NavLink>
+        <NavLink to="/echo" className="m-1 dynamic-color" >Echo</NavLink>
         <NavLink to="/snake" className="m-1 dynamic-color" >Snake (game)</NavLink>
         {/* <NavLink to="/mongoose" className="m-1 dynamic-color" >Mongoose</NavLink>
         <NavLink to="/account" className="m-1 dynamic-color" >Account</NavLink>

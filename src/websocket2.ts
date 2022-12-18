@@ -69,6 +69,10 @@ class WebSocketManager {
       this.findInstance(id).instance.onopen = evHandler;
     }
 
+    const setOncloseHandler = (id: string, evHandler: any) => {
+      this.findInstance(id).instance.onclose = evHandler;
+    }
+
     const setOnerrorHandler = (id: string, evHandler: any) => {
       this.findInstance(id).instance.onerror = evHandler;
     }
@@ -88,6 +92,9 @@ class WebSocketManager {
       },
       set onopen(evHandler: any) {
         setOnopenHandler(currentId, evHandler);
+      },
+      set onclose(evHandler: any) {
+        setOncloseHandler(currentId, evHandler);
       },
       set onerror(evHandler: any) {
         setOnerrorHandler(currentId, evHandler);
