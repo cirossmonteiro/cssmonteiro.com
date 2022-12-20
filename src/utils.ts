@@ -19,6 +19,8 @@ export const randomNumber = (a: number, b: number) => a+Math.random()*(b-a+1);
 
 export const randomInt = (a: number, b: number) => Math.round(randomNumber(a, b));
 
+export const randomString = (size: number) => String.fromCharCode(...initArray(size).map(_ => randomInt(97, 121)));
+
 // function useDebounce(timeout: number = 300) {
 //   const anchor = useRef<NodeJS.Timeout>();
 //   const run = (callback: any) => {

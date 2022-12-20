@@ -44,7 +44,7 @@ root.render(
           <Route path="/snake" element={<Snake />} />
           <Route path="/api-docs" element={<APIDocs />} />
           <Route path="/fake-whatsapp" element={<FakeWhatsapp />} />
-          <Route path="/echo" element={<Echo />} />
+          <Route path="/echo/:room" element={<Echo />} />
           <Route path="/twitter.com/:username" element={<TwitterProfile />} />
           {/* <Route path="/mongoose" element={<BigWall />} />
           <Route path="/account" element={<Account />} />
