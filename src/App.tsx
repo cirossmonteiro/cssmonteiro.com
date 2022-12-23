@@ -1,4 +1,3 @@
-import "antd/dist/antd.css";
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
@@ -35,8 +34,8 @@ const App = () => {
         <NavLink to="/echo" className="m-1 dynamic-color" >Echo</NavLink>
         <NavLink to="/snake" className="m-1 dynamic-color" >Snake (game)</NavLink>
         {/* <NavLink to="/mongoose" className="m-1 dynamic-color" >Mongoose</NavLink>
-        <NavLink to="/account" className="m-1 dynamic-color" >Account</NavLink>
-        <NavLink to="/pixels-art" className="m-1 dynamic-color" >Pixels Art</NavLink> */}
+        <NavLink to="/account" className="m-1 dynamic-color" >Account</NavLink>*/}
+        <NavLink to="/pixels-art" className="m-1 dynamic-color" >Pixels Art</NavLink>
       </div>
       <FlyingSquare amount={amount} className="m-5">
         <PageTitle className="m-0 p-3 change-border-style cd dynamic-color" color={style.color}>

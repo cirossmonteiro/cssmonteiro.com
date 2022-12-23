@@ -15,7 +15,7 @@ import FakeWhatsapp from './components/fake-whatsapp';
 // import BigWall from './components/big-wall';
 // import Account from './components/account';
 import styled from 'styled-components';
-// import PixelsArt from './components/pixels-art';
+import PixelsArt from './components/pixels-art';
 import APIDocs from './components/api-docs';
 import TwitterProfile from './components/twitter/profile';
 import Echo from './components/echo';
@@ -31,7 +31,7 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <div className="h-100 d-flex flex-column">
       <RedAttention className="m-1">
         <span>origin: {segment} - </span>
@@ -47,12 +47,13 @@ root.render(
           <Route path="/echo/:room" element={<Echo />} />
           <Route path="/twitter.com/:username" element={<TwitterProfile />} />
           {/* <Route path="/mongoose" element={<BigWall />} />
-          <Route path="/account" element={<Account />} />
-          <Route path="/pixels-art" element={<PixelsArt />} /> */}
+          <Route path="/account" element={<Account />} />*/}
+          <Route path="/pixels-art/" element={<PixelsArt />} />
+          <Route path="/pixels-art/:id" element={<PixelsArt />} />
         </Routes>
       </HashRouter>
     </div>
-  </React.StrictMode>
+  // </React.StrictMode>
 );
 
 

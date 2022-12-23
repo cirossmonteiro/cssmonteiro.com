@@ -1,13 +1,12 @@
 import { Button, DatePicker, Input, Select, Switch, Table, Tooltip } from "antd";
+import dayjs from "dayjs";
 import moment from "moment";
 import { ChangeEvent, useCallback, useState } from "react";
 import styled from "styled-components";
 import { v4 as uuid4 } from 'uuid';
 
 import DragSplitView from "../drag-split-view";
-
 import { rgbArrToHex } from "../palette2";
-
 import './bg-image.png';
 
 type RGB = [number, number, number];
@@ -368,7 +367,7 @@ const FakeWhatsapp = () => {
                 dataIndex: 'timestamp',
                 title: 'Timestamp',
                 render: (value, _, index) => (
-                  <DatePicker value={moment(value)} format="YYYY-MM-DD HH:mm" showTime={true}
+                  <DatePicker value={dayjs(value)} format="YYYY-MM-DD HH:mm" showTime={true}
                     onChange={onChangeMessageTimestamp(index) as any} allowClear={false}/>
                 )
               },

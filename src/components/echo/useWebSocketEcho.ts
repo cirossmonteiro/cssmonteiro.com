@@ -86,11 +86,14 @@ const useWebSocketEcho = <T>(path: string, room: string, options?: useWebSocketE
 
   return {
     list,
-    sendText: (text: string) => wsRef.current.send(JSON.stringify({
-      data: { text },
-      room,
-      type: OPERATIONS.ECHO,
-    })),
+    sendText: (text: string) => {
+      // to-think: why removing extra whitespaces in websocket sending???
+      wsRef.current.send(JSON.stringify({
+        data: { text },
+        room,
+        type: OPERATIONS.ECHO,
+      }))
+    },
     sendObj: (obj: Object) => wsRef.current.send(JSON.stringify(obj)),
     clearList: () => setList([])
   };
