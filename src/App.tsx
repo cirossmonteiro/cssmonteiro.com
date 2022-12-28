@@ -36,6 +36,7 @@ const App = () => {
         {/* <NavLink to="/mongoose" className="m-1 dynamic-color" >Mongoose</NavLink>
         <NavLink to="/account" className="m-1 dynamic-color" >Account</NavLink>*/}
         <NavLink to="/pixels-art" className="m-1 dynamic-color" >Pixels Art</NavLink>
+        <NavLink to="/shooting" className="m-1 dynamic-color" >Shooting</NavLink>
       </div>
       <FlyingSquare amount={amount} className="m-5">
         <PageTitle className="m-0 p-3 change-border-style cd dynamic-color" color={style.color}>

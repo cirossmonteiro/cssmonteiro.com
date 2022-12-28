@@ -2,9 +2,9 @@
   draw, save to mogoose, create another component to request from API and render acoording to props received
  */
 
-import { Button, Col, Form, Input, Popconfirm, Radio, Row } from "antd";
+import { Button, Col, Form, Input, Popconfirm, Radio, Row, Switch } from "antd";
 import { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 
 import api from "../../api";
@@ -47,9 +47,11 @@ const getPixelsArts = async (id: string = "") => {
 }
 
 const PixelsArt = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
   
   const [brushSize, setBrushSize] = useState<number>(0);
+  const [showGrid, setShowGrid] = useState<boolean>(false);
 
   const [title, setTitle]   = useState<string>("here");
   const [x, setX]           = useState<number>(30);
@@ -74,7 +76,8 @@ const PixelsArt = () => {
     if (id) {
       await putPixelsArt(id, { title, size: [x, y], rect: [width, height], points });
     } else {
-      await postPixelsArt({ title, size: [x, y], rect: [width, height], points });
+      const data = await postPixelsArt({ title, size: [x, y], rect: [width, height] });
+      navigate(`/pixels-art/${data._id}`);
     }
   }, [id, x, y, width, height, title, points]);
 
@@ -132,10 +135,14 @@ const PixelsArt = () => {
               <Radio value={2}>big</Radio>
             </Radio.Group>
           </Form.Item>
+
+          <Form.Item label="Show grid">
+            <Switch checked={showGrid} onChange={setShowGrid} />
+          </Form.Item>
           
           <EditorArrowsAround onChange={setPoints} points={points} x={x} y={y}>
             <Editor size={[x, y]} rect={[width, height]} points={points} onChange={setPoints}
-              brushSize={brushSize} />
+              brushSize={brushSize} showGrid={showGrid} />
           </EditorArrowsAround>
 
           <Row className="mt-3">

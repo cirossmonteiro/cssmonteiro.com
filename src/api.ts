@@ -1,8 +1,11 @@
 import axios, { GenericAbortSignal } from "axios";
 import { WebSocket2 } from "./websocket2";
 
+const MAX_TIMEOUT = 5; // seconds
+
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:4000/api"
+  baseURL: "http://localhost:4000/api",
+  timeout: MAX_TIMEOUT*1000
 });
 
 axiosInstance.interceptors.request.use(request => {

@@ -31,8 +31,15 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start-fake": "REACT_APP_SEGMENT=fake react-scripts start",
+    "start-ciro": "REACT_APP_SEGMENT=ciro react-scripts start",
+    "start-dangerous-fake": "PORT=3000 npm run start-fake",
+    "start-dangerous-ciro": "PORT=3001 npm run start-ciro",
+    "start-careful-fake": "PORT=3002 REACT_APP_CAREFUL=1 npm run start-fake",
+    "start-careful-ciro": "PORT=3003 REACT_APP_CAREFUL=1 npm run start-ciro",
+    "start": "ttab npm run start-dangerous-ciro && ttab npm run start-careful-fake && ttab npm run start-careful-ciro && npm run start-dangerous-fake",
     "build": "npm run build-source-code-page && react-scripts build",
+    "build-dangerous-fake": "REACT_APP_SEGMENT=fake npm run build",
     "build-source-code-page": "python3 build_source_code_page.py",
     "serve": "npm run build && serve build",
     "test": "react-scripts test",

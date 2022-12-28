@@ -19,6 +19,7 @@ import PixelsArt from './components/pixels-art';
 import APIDocs from './components/api-docs';
 import TwitterProfile from './components/twitter/profile';
 import Echo from './components/echo';
+import Shooting from './components/shooting';
 
 const segment = process.env.REACT_APP_SEGMENT;
 const careful = parseInt(process.env.REACT_APP_CAREFUL || '0') === 1;
@@ -50,6 +51,7 @@ root.render(
           <Route path="/account" element={<Account />} />*/}
           <Route path="/pixels-art/" element={<PixelsArt />} />
           <Route path="/pixels-art/:id" element={<PixelsArt />} />
+          <Route path="/shooting" element={<Shooting />} />
         </Routes>
       </HashRouter>
     </div>
