@@ -20,6 +20,7 @@ import APIDocs from './components/api-docs';
 import TwitterProfile from './components/twitter/profile';
 import Echo from './components/echo';
 import Shooting from './components/shooting';
+import FileManager from './components/file-manager';
 
 const segment = process.env.REACT_APP_SEGMENT;
 const careful = parseInt(process.env.REACT_APP_CAREFUL || '0') === 1;
@@ -52,6 +53,7 @@ root.render(
           <Route path="/pixels-art/" element={<PixelsArt />} />
           <Route path="/pixels-art/:id" element={<PixelsArt />} />
           <Route path="/shooting" element={<Shooting />} />
+          <Route path="/file-manager/" element={<FileManager />} />
         </Routes>
       </HashRouter>
     </div>

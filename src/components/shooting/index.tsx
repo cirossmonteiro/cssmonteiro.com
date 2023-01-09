@@ -4,6 +4,7 @@ import Canvas from "./canvas";
 import useMouse from "./useMouse";
 import useParentSize from "./useParentSize";
 import useRandomPos from "./useRandomPos";
+import { useCountableEffect } from "../../utils";
 
 
 const INTERVAL_TIME = 300; // ms
@@ -63,7 +64,8 @@ const Shooting = () => {
   const canvasRender = useRef<any>();
   const [[width, height], divRef] = useParentSize();
   const { pos: [x, y], mouseProps, setMouseCallback } = useMouse();
-  const { pos: [tx, ty], update } = useRandomPos();
+  const { pos: [tx, ty], update } = useRandomPos({ interval: [.2, .8] });
+  console.log(68, [tx, ty]);
   // const [bullets, shoot] = useBullets(800, 600);
 
   useEffect(() => {
