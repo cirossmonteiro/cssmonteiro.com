@@ -61,3 +61,9 @@ export const useCountableEffect = (callback: any, dependencies: any[], limit: nu
     }
   }, [...dependencies, count]);
 };
+
+export const useEffectAsync = (callback: any, dependencies: any[]) => {
+  useEffect(() => {
+    callback();
+  }, dependencies);
+}

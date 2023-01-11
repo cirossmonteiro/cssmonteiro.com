@@ -1,11 +1,14 @@
-import { Table as AntDTable, Button, Checkbox, Tooltip } from "antd";
+import { Table as AntDTable, Button, Checkbox, Form, Input, Tooltip } from "antd";
 import { faCircleCheck, faPencil, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import styled from "styled-components";
 
 import axiosInstance from "../../api";
-import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
+import { useEffectAsync } from "../../utils";
+
 
 const readFileList = (files: FileList): Promise<string[]> => {
   return new Promise(resolve => {
@@ -29,28 +32,18 @@ const readFileList = (files: FileList): Promise<string[]> => {
   })
 }
 
-const useFiles = () => {
-  const [files, setFiles] = useState<any[]>([]);
-
-  const handleUpload = useCallback(async (e: any) => {
-    const data = await readFileList(e.target.files);
-    setFiles(data);
-  }, []);
-
-  return [
-    files,
-    setFiles,
-    handleUpload
-  ] as any;
-}
-
 const retrieve = async (path: string = "") => {
   const response = await axiosInstance.get("/file-manager", { params: { path } });
   return response.data;
 }
 
 const upload = async (file: any) => {
-  const response = await axiosInstance.post("/file-manager/upload", file);
+  const response = await axiosInstance.post("/file-manager", file);
+  return response.data;
+}
+
+const remove = async (path: string) => {
+  const response = await axiosInstance.delete("/file-manager", { params: { path } });
   return response.data;
 }
 
@@ -58,42 +51,51 @@ const allowUncompress = (file: any) => {
   return file.filename.slice(-4) === ".zip";
 }
 
+
 const FileManager = () => {
   const [currentFolder, setCurrentFolder] = useState<string>("");
-  const [files, setFiles, uploadFiles] = useFiles();
+  const [uploaded, setUploaded] = useState<boolean[]>([]);
   const [listing, setListing] = useState<any[]>([]);
-  console.log(35, files);
-  console.log(57, listing);
 
-  const handleRetrieve = useCallback(async (path: string = "") => {
-    const data = await retrieve(path);
+  const { control, handleSubmit, setValue } = useForm({
+    defaultValues: {
+      file: [] as any[]
+    }
+  });
+  const { fields: files, remove: removeFromUploadList } = useFieldArray({
+    control,
+    name: "file",
+  });
+
+  const uploadFiles = useCallback(async (e: any) => {
+    const data = await readFileList(e.target.files);
+    setValue("file", data);
+  }, []);
+
+  const isListingEdited = useMemo(() => {
+    return listing.some(file => file.checked);
+  }, [listing]);
+
+  useEffectAsync(async () => {
+    const data = await retrieve(currentFolder);
     setListing(data.list);
-  }, []);
-
-  useEffect(() => {
-    handleRetrieve(currentFolder);
-  }, [files, currentFolder]);
-
-  const handleUpload = useCallback((file: any) => () => {
-    const data = upload(file);
-    console.log(53, data);
-  }, []);
-
-  const handleUploadAll = useCallback(async () => {
-    const newFiles = await Promise.all(files.map(async (file: any) => {
-      const data = await upload(file);
-      return {
-        ...file,
-        uploaded: true
-      };
-    }));
-    setFiles(newFiles);
-  }, [files]);
-
-  const handleToggleZip = useCallback((fileIndex: number) => () => {
-    setFiles((arr: any[]) => {
-      arr[fileIndex].uncompress = !arr[fileIndex].uncompress;
-      return [ ...arr ];
+  }, [uploaded, currentFolder]);
+  
+  const handleUploadAll = useCallback((values: any) => {
+    const currentFiles: any[] = values.file;
+    currentFiles.forEach(async (file: any, index: number) => {
+      await upload(file);
+      setUploaded(ups => {
+        if (ups.length === currentFiles.length) {
+          ups[index] = true;
+          return [ ...ups ];
+        } else {
+          return currentFiles.map((_, cfIndex) => {
+            return cfIndex === index;
+          });
+        }
+      });
+      setValue(`file.${index}.uploaded`, true);
     });
   }, []);
 
@@ -106,24 +108,61 @@ const FileManager = () => {
   }, []);
 
   const handleToggleCheck = useCallback((index: number) => () => {
+    if (isListingEdited) {
+      setListing(list => {
+        list[index].checked = !list[index].checked;
+        return [ ...list ];
+      });
+    }
+  }, [isListingEdited]);
+
+  const handleDelete = useCallback((filename: string) => async () => {
+    await remove(`${currentFolder}/${filename}`);
     setListing(list => {
-      list[index].checked = !list[index].checked;
-      return [ ...list ];
+      return list.filter(file => file.filename !== filename);
     });
-  }, []);
+  }, [currentFolder]);
 
-  // to-do
-  const handleDelete = useCallback((filename: string) => () => {
-
-  }, []);
-
-  // to-do
+  // to-do: rename after upload
   const handleRename = useCallback((filename: string) => () => {
 
   }, []);
 
-  // to-do: one checkbox selected activates "edit mode" on table,
-  // so user can select row by clicking in any part of row
+  const onSelectChange = useCallback((filenames: React.Key[]) => {
+    setListing(list => {
+      return list.map(file => {
+        return {
+          ...file,
+          checked: filenames.includes(file.filename)
+        }
+      });
+    })
+  }, []);
+
+  const rowSelection = useMemo(() => ({
+    selectedRowKeys: listing.filter(file => file.checked).map(file => file.filename),
+    onChange: onSelectChange,
+  }), [listing]);
+
+  const handleDeleteChecked = useCallback(() => {
+    listing.filter(file => file.checked).forEach(file => {
+      handleDelete(file.filename)();
+    });
+  }, [listing]);
+
+  const listingJSX = useMemo(() => {
+    return (
+      <>
+        <Tooltip title="delete">
+          <FAIconClickable icon={faTrashCan} onClick={handleDeleteChecked} />
+        </Tooltip>
+      </>
+    );
+  }, [listing]);
+
+  const handleUploadRemove = useCallback((index: number) => () => {
+    removeFromUploadList(index);
+  }, []);
 
   return (
     <div>
@@ -132,53 +171,82 @@ const FileManager = () => {
         Select files
         <input type="file" onChange={uploadFiles} multiple/>
       </Upload>
-      <Table className="m-3" rowKey="filename" dataSource={files} pagination={false}
-        columns={[
-          {
-            title: "Filename",
-            dataIndex: "filename",
-          },
-          {
-            title: "Size(bytes)",
-            dataIndex: "size"
-          },
-          {
-            title: "Type",
-            dataIndex: "type"
-          },
-          {
-            title: "Uncompress",
-            render: (_, file: any, fileIndex) => {
-              return <Checkbox disabled={!allowUncompress(file)} className="ms-1"
-                checked={!!file?.uncompress} onChange={handleToggleZip(fileIndex)} />
+      <Form onFinish={handleSubmit(handleUploadAll)}>
+        <Table className="m-3" rowKey="filename" dataSource={files} pagination={false} // to-do: rowSelection
+          columns={[
+            {
+              title: "Filename",
+              dataIndex: "filename",
+              render: (_, __, index) => {
+                return (
+                  <Form.Item>
+                    <Controller
+                      name={`file.${index}.filename`}
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field }) => <Input {...field} />}
+                    />
+                  </Form.Item>
+                )
+              }
+            },
+            {
+              title: "Size(bytes)",
+              dataIndex: "size"
+            },
+            {
+              title: "Type",
+              dataIndex: "type"
+            },
+            {
+              title: "Uncompress",
+              render: (_, file: any, index) => {
+                return (
+                  <Form.Item>
+                    <Controller
+                      name={`file.${index}.uncompress`}
+                      control={control}
+                      render={({ field }) => <Checkbox {...field} checked={field.value} disabled={!allowUncompress(file)} />}
+                    />
+                  </Form.Item>
+                );
+              }
+            },
+            {
+              title: "Uploaded",
+              dataIndex: "uploaded",
+              render: (_, __, index) => 
+                <FAIcon uploaded={uploaded[index]} icon={uploaded[index] ? faCircleCheck : faXmark} />
+            },
+            {
+              title: "actions",
+              render: (_, __, index) => {
+                return (
+                  <FAIconClickable icon={faTrashCan} onClick={handleUploadRemove(index)}/>
+                )
+              }
             }
-          },
-          {
-            title: "Uploaded",
-            dataIndex: "uploaded",
-            render: uploaded => 
-              <FAIcon uploaded={uploaded} icon={uploaded ? faCircleCheck : faXmark} />
+          ]}
+          footer={() => 
+            (
+              <Form.Item>
+                {/* <Button htmlType="submit" disabled={rhfFile.length === 0}> */}
+                <Button htmlType="submit" disabled={files.length === 0}>
+                  Start uploading
+                </Button>
+              </Form.Item>
+            )
           }
-        ]}
-        footer={() => 
-          (
-            <Button onClick={handleUploadAll}>
-              Start uploading
-            </Button>
-          )
-        }
-      />      
+        />
+      </Form>
 
-      <Table className="m-3" rowKey="filename" pagination={false}
-        dataSource={[ ...listing, ...( currentFolder === "" ? [] : [{ filename: ".."}] ) ]}  
+      <Table className="m-3" rowKey="filename" pagination={false} rowSelection={rowSelection}
+        footer={() => isListingEdited ? listingJSX : null}
+        onRow={(_, index: number = 0) => ({
+          onClick: handleToggleCheck(index)
+        })}
+        dataSource={[ ...listing, ...( currentFolder === "" ? [] : [{ filename: ".."}] ) ]} 
         columns={[
-          {
-            dataIndex: "checked",
-            render: (checked, __, index) => {
-              return index === listing.length ? null :
-              <Checkbox checked={checked} onChange={handleToggleCheck(index)} />
-            }
-          },
           {
             title: "Filename",
             dataIndex: "filename",
@@ -199,9 +267,9 @@ const FileManager = () => {
               );
             }
           },
-          {
+          ...(isListingEdited ? [] : [{
             title: "actions",
-            render: (_, file: any) => {
+            render: (_: any, file: any) => {
               return  file.filename === ".." ? null
               : <>
                   <Tooltip title="delete">
@@ -212,7 +280,7 @@ const FileManager = () => {
                   </Tooltip>
                 </>;
             }
-          }
+          }])
         ]}
       />
     </div>
