@@ -1,4 +1,4 @@
-import { Table as AntDTable, Button, Checkbox, Form, Input, Modal, Tooltip } from "antd";
+import { Table as AntDTable, Button, Checkbox, Form, Input, Modal, Radio, Tooltip } from "antd";
 import { faCircleCheck, faDownload, faPencil, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -8,6 +8,8 @@ import styled from "styled-components";
 
 import axiosInstance from "../../api";
 import { useEffectAsync } from "../../utils";
+
+const BACKEND = "http://localhost:4000";
 
 
 const readFileList = (files: FileList): Promise<string[]> => {
@@ -56,12 +58,29 @@ const rename = async (oldName: string, newName: string) => {
   return response.data;
 }
 
+const newFolder = async (foldername: string) => {
+  const response = await axiosInstance.post("/file-manager/folder", { foldername });
+  return response.data;
+}
+
+const newFile = async (filename: string, contents: string, type: "text" | "base64") => {
+  const response = await axiosInstance.post("/file-manager/file", { filename, contents, type });
+  return response.data;
+}
+
+const downloadFolder = async (foldername: string) => {
+  const response = await axiosInstance.get("/file-manager/folder", { params: { foldername } });
+  return response.data;
+}
+
 
 const FileManager = () => {
   const [currentFolder, setCurrentFolder] = useState<string>("");
   const [uploaded, setUploaded] = useState<boolean[]>([]);
   const [listing, setListing] = useState<any[]>([]);
   const [openRenameModal, setOpenRenameModal] = useState<number>(-1);
+  const [openNewFolderModal, setOpenNewFolderModal] = useState<boolean>(false);
+  const [openNewFileModal, setOpenNewFileModal] = useState<boolean>(false);
 
   const { control, handleSubmit, setValue } = useForm({
     defaultValues: {
@@ -76,6 +95,24 @@ const FileManager = () => {
   const { handleSubmit: handleRenameSubmit, control: renameControl, setValue: setRenameValue } = useForm({
     defaultValues: {
       filename: "",
+    }
+  });
+
+  const { handleSubmit: handleNewFolderSubmit, control: newFolderControl, setValue: setNewFolderValue } = useForm({
+    defaultValues: {
+      foldername: "",
+    }
+  });
+
+  const { handleSubmit: handleNewFileSubmit, control: newFileControl, setValue: setNewFileValue } = useForm<{
+    filename: string;
+    contents: string;
+    type: "text" | "base64"
+  }>({
+    defaultValues: {
+      filename: "",
+      contents: "",
+      type: "text"
     }
   });
 
@@ -95,9 +132,13 @@ const FileManager = () => {
     return listing.some(file => file.checked);
   }, [listing]);
 
-  useEffectAsync(async () => {
+  const handleRetrieve = useCallback(async () => {
     const data = await retrieve(currentFolder);
     setListing(data.list);
+  }, [currentFolder]);
+
+  useEffectAsync(() => {
+    handleRetrieve();
   }, [uploaded, currentFolder]);
   
   const handleUploadAll = useCallback((values: any) => {
@@ -181,8 +222,40 @@ const FileManager = () => {
   const handleRename = useCallback(async (values: any) => {
     const { filename } = listing[openRenameModal];
     await rename(`${currentFolder}/${filename}`, `${currentFolder}/${values.filename}`);
+    handleRetrieve();
     setOpenRenameModal(-1);
-  }, [openRenameModal]);
+  }, [currentFolder, openRenameModal]);
+
+  const handleNewFolder = useCallback(async (values: any) => {
+    await newFolder(`${currentFolder}/${values.foldername}`);
+    handleRetrieve();
+    setOpenNewFolderModal(false);
+  }, [currentFolder]);
+
+  const handleNewFile = useCallback(async (values: any) => { 
+    await newFile(`${currentFolder}/${values.filename}`, values.contents, values.type);
+    handleRetrieve();
+    setOpenNewFileModal(false);
+  }, [currentFolder]);
+
+  const newActionJSX = useMemo(() => {
+    return (
+      <div>
+        <Button onClick={() => setOpenNewFolderModal(true)}>
+          New folder
+        </Button>
+        <Button className="ms-2" onClick={() => setOpenNewFileModal(true)}>
+          New file
+        </Button>
+      </div>
+    );
+  }, []);
+
+  const handleDownload = useCallback(async (foldername: string) => {
+    const path = `${currentFolder}/${foldername}`;
+    const data = await downloadFolder(path);
+    window.open(`${BACKEND}/${data.path}`, "_blank");
+  }, [currentFolder]);
 
   return (
     <div>
@@ -261,7 +334,7 @@ const FileManager = () => {
       </Form>
 
       <Table className="m-3" rowKey="filename" pagination={false} rowSelection={rowSelection}
-        footer={() => isListingEdited ? listingJSX : null}
+        footer={() => isListingEdited ? listingJSX : newActionJSX}
         onRow={(_, index: number = 0) => ({
           onClick: handleToggleCheck(index)
         })}
@@ -298,9 +371,17 @@ const FileManager = () => {
                   <Tooltip title="rename">
                     <FAIconClickable className="ms-2" onClick={() => setOpenRenameModal(index)} icon={faPencil} />
                   </Tooltip>
-                  {!file.isDirectory && (
+                  {file.isDirectory
+                  ? (
+                    <Tooltip title="download folder">
+                      <A onClick={() => handleDownload(file.filename)} className="ms-2" target="_blank">
+                        <FontAwesomeIcon icon={faDownload} />
+                      </A>
+                    </Tooltip>
+                  )
+                  : (
                     <Tooltip title="access">
-                      <A href={`http://localhost:4000/media${currentFolder}/${file.filename}`} className="ms-2" target="_blank">
+                      <A href={`${BACKEND}/media${currentFolder}/${file.filename}`} className="ms-2" target="_blank">
                         <FontAwesomeIcon icon={faDownload} />
                       </A>
                     </Tooltip>
@@ -311,7 +392,7 @@ const FileManager = () => {
         ]}
       />
 
-      <Modal open={openRenameModal !== -1} onCancel={() => setOpenRenameModal(-1)}
+      <Modal title="Rename" open={openRenameModal !== -1} onCancel={() => setOpenRenameModal(-1)}
         onOk={handleRenameSubmit(handleRename)}>
         <Form>
           <Form.Item label="Current name">
@@ -325,6 +406,59 @@ const FileManager = () => {
               render={({ field }) => <Input {...field} />}
             />
           </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal title="New folder" open={openNewFolderModal} onCancel={() => setOpenNewFolderModal(false)}
+        onOk={handleNewFolderSubmit(handleNewFolder)}>
+        <Form>
+          <Form.Item label="Folder name">
+            <Controller
+              name="foldername"
+              control={newFolderControl}
+              rules={{ required: true }}
+              render={({ field }) => <Input {...field} />}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal title="New file" open={openNewFileModal} onCancel={() => setOpenNewFileModal(false)}
+        onOk={handleNewFileSubmit(handleNewFile)}>
+        <Form>
+
+          <Form.Item label="File name">
+            <Controller
+              name="filename"
+              control={newFileControl}
+              rules={{ required: true }}
+              render={({ field }) => <Input {...field} />}
+            />
+          </Form.Item>
+
+          <Form.Item label="Contents">
+            <Controller
+              name="contents"
+              control={newFileControl}
+              rules={{ required: true }}
+              render={({ field }) => <Input.TextArea {...field} />}
+            />
+          </Form.Item>
+
+          <Form.Item label="File type">
+            <Controller
+              name="type"
+              control={newFileControl}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Radio.Group {...field}>
+                  <Radio value="text">text</Radio>
+                  <Radio value="base64">base64</Radio>
+                </Radio.Group>
+              )}
+            />
+          </Form.Item>
+
         </Form>
       </Modal>
     </div>
