@@ -38,6 +38,7 @@ const App = () => {
         <NavLink to="/pixels-art" className="m-1 dynamic-color" >Pixels Art</NavLink>
         <NavLink to="/shooting" className="m-1 dynamic-color" >Shooting</NavLink>
         <NavLink to="/file-manager" className="m-1 dynamic-color" >File Manager</NavLink>
+        <NavLink to="/trello" className="m-1 dynamic-color">Trello</NavLink>
       </div>
       <FlyingSquare amount={amount} className="m-5">
         <PageTitle className="m-0 p-3 change-border-style cd dynamic-color" color={style.color}>

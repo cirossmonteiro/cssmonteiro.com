@@ -1,14 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { Provider } from 'react-redux';
 import {
   HashRouter,
   Route,
   Routes,
 } from "react-router-dom";
 
+import reportWebVitals from './reportWebVitals';
+import { store } from './store';
+
+
 import './index.scss';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+
 import SourceCodePage from './source_code_page';
 import Snake from './components/snake';
 import FakeWhatsapp from './components/fake-whatsapp';
@@ -21,6 +26,8 @@ import TwitterProfile from './components/twitter/profile';
 import Echo from './components/echo';
 import Shooting from './components/shooting';
 import FileManager from './components/file-manager';
+import Trello from './components/trello';
+
 
 const segment = process.env.REACT_APP_SEGMENT;
 const careful = parseInt(process.env.REACT_APP_CAREFUL || '0') === 1;
@@ -35,27 +42,30 @@ const root = ReactDOM.createRoot(
 root.render(
   // <React.StrictMode>
     <div className="h-100 d-flex flex-column">
-      <RedAttention className="m-1">
-        <span>origin: {segment} - </span>
-        <span className="ms-1">{careful ? 'careful' : 'fire at will'}</span>
-      </RedAttention>
-      <HashRouter>
-        <Routes>
-          <Route path="/" element={<App />} />
-          {!careful && <Route path="/source" element={<SourceCodePage />} />}
-          <Route path="/snake" element={<Snake />} />
-          <Route path="/api-docs" element={<APIDocs />} />
-          <Route path="/fake-whatsapp" element={<FakeWhatsapp />} />
-          <Route path="/echo/:room" element={<Echo />} />
-          <Route path="/twitter.com/:username" element={<TwitterProfile />} />
-          {/* <Route path="/mongoose" element={<BigWall />} />
-          <Route path="/account" element={<Account />} />*/}
-          <Route path="/pixels-art/" element={<PixelsArt />} />
-          <Route path="/pixels-art/:id" element={<PixelsArt />} />
-          <Route path="/shooting" element={<Shooting />} />
-          <Route path="/file-manager/" element={<FileManager />} />
-        </Routes>
-      </HashRouter>
+      <Provider store={store}>
+        <RedAttention className="m-1">
+          <span>origin: {segment} - </span>
+          <span className="ms-1">{careful ? 'careful' : 'fire at will'}</span>
+        </RedAttention>
+        <HashRouter>
+          <Routes>
+            <Route path="/" element={<App />} />
+            {!careful && <Route path="/source" element={<SourceCodePage />} />}
+            <Route path="/snake" element={<Snake />} />
+            <Route path="/api-docs" element={<APIDocs />} />
+            <Route path="/fake-whatsapp" element={<FakeWhatsapp />} />
+            <Route path="/echo/:room" element={<Echo />} />
+            <Route path="/twitter.com/:username" element={<TwitterProfile />} />
+            {/* <Route path="/mongoose" element={<BigWall />} />
+            <Route path="/account" element={<Account />} />*/}
+            <Route path="/pixels-art/" element={<PixelsArt />} />
+            <Route path="/pixels-art/:id" element={<PixelsArt />} />
+            <Route path="/shooting" element={<Shooting />} />
+            <Route path="/file-manager/" element={<FileManager />} />
+            <Route path="/trello/" element={<Trello />} />
+          </Routes>
+        </HashRouter>
+      </Provider>
     </div>
   // </React.StrictMode>
 );

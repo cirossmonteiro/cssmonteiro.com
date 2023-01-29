@@ -8,6 +8,7 @@ import styled from "styled-components";
 
 import axiosInstance from "../../api";
 import { useEffectAsync } from "../../utils";
+import ReactCodeMirror from "@uiw/react-codemirror";
 
 const BACKEND = "http://localhost:4000";
 
@@ -75,12 +76,12 @@ const downloadFolder = async (foldername: string) => {
 
 
 const FileManager = () => {
-  const [currentFolder, setCurrentFolder] = useState<string>("");
-  const [uploaded, setUploaded] = useState<boolean[]>([]);
-  const [listing, setListing] = useState<any[]>([]);
-  const [openRenameModal, setOpenRenameModal] = useState<number>(-1);
+  const [currentFolder, setCurrentFolder]           = useState<string>("");
+  const [uploaded, setUploaded]                     = useState<boolean[]>([]);
+  const [listing, setListing]                       = useState<any[]>([]);
+  const [openRenameModal, setOpenRenameModal]       = useState<number>(-1);
   const [openNewFolderModal, setOpenNewFolderModal] = useState<boolean>(false);
-  const [openNewFileModal, setOpenNewFileModal] = useState<boolean>(false);
+  const [openNewFileModal, setOpenNewFileModal]     = useState<boolean>(false);
 
   const { control, handleSubmit, setValue } = useForm({
     defaultValues: {
@@ -441,7 +442,7 @@ const FileManager = () => {
               name="contents"
               control={newFileControl}
               rules={{ required: true }}
-              render={({ field }) => <Input.TextArea {...field} />}
+              render={({ field }) => <ReactCodeMirror {...field} />}
             />
           </Form.Item>
 
@@ -512,3 +513,43 @@ const Table = styled(AntDTable)`
 `
 
 export default FileManager;
+
+/* 
+
+to-do:
+
+- refactor
+
+-- styled
+-- modals
+-- reorder: useEffect, useMemo, useCallback
+-- API requests
+-- extra functions
+
+- improve input/textarea for creating/edit text files
+
+-- pastebin-like
+-- colors
+-- bold, italic, underline
+-- programming languages
+-- line numbering (HTML native)
+--- https://www.w3schools.com/html/html_lists_ordered.asp
+--- https://stackoverflow.com/questions/11946098/how-to-remove-dot-after-number-in-ordered-list-items-in-ol-li
+
+- preview
+
+-- raw text
+-- PDF
+-- HTML
+-- image
+-- videoplayer
+
+- integrations
+
+-- google drive
+-- blogger
+-- pastebin
+-- medium
+
+
+*/
