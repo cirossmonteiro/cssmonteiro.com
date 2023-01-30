@@ -7,6 +7,9 @@ import { useSelector } from "react-redux";
 
 import { selectors } from "./slice";
 import Create from "./create";
+import styled from "styled-components";
+import Board from "./board/board";
+import { authorQuoteMap } from "./board/data";
 
 // fake data generator
 const getItems = (count: number, offset = 0) =>
@@ -107,11 +110,13 @@ const Trello = () => {
           {state.map((el: any[], ind: number) => (
             <Droppable key={ind} droppableId={`${ind}`}>
               {(provided: any, snapshot: any) => (
-                <div
+                <Column
                   ref={provided.innerRef}
-                  style={getListStyle(snapshot.isDraggingOver)}
+                  // style={getListStyle(snapshot.isDraggingOver)}
                   {...provided.droppableProps}
+                  className="me-2 p-2"
                 >
+                  <div className="mb-2 title">title</div>
                   {el.map((item, index) => (
                     <Draggable
                       key={item.id}
@@ -119,48 +124,47 @@ const Trello = () => {
                       index={index}
                     >
                       {(provided: any, snapshot: { isDragging: any; }) => (
-                        <div
+                        <Card
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          style={getItemStyle(
-                            snapshot.isDragging,
-                            provided.draggableProps.style
-                          )}
+                          className="mb-2 p-2"
+                          // style={getItemStyle(
+                          //   snapshot.isDragging,
+                          //   provided.draggableProps.style
+                          // )}
                         >
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-around"
-                            }}
-                          >
-                            {item.content}
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const newState = [...state];
-                                newState[ind].splice(index, 1);
-                                setState(
-                                  newState.filter(group => group.length)
-                                );
-                              }}
-                            >
-                              delete
-                            </button>
-                          </div>
-                        </div>
+                          card body
+                        </Card>
                       )}
                     </Draggable>
                   ))}
                   {provided.placeholder}
-                </div>
+                </Column>
               )}
             </Droppable>
           ))}
         </DragDropContext>
       </div>
+      <Board initial={authorQuoteMap} />
     </div>
   );
 }
+
+const Column = styled.div`
+  border-radius: 5px;
+  background: #EBECF0;
+  .title {
+    font-weight: bold;
+  }
+`
+
+const Card = styled.div`
+  border-radius: 5px;
+  background: white;
+  &:hover {
+    background: #F4F5F7;
+  }
+`;
 
 export default Trello;
