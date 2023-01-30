@@ -1,6 +1,3 @@
-// @flow
-// import type { DraggableId, DraggableLocation } from '../../src/types';
-
 import { DraggableId, DraggableLocation } from "react-beautiful-dnd";
 
 export type Id = string;

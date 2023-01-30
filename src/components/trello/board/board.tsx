@@ -1,26 +1,10 @@
-// @flow
 import React, { Component } from 'react';
-// import styled from '@emotion/styled';
-// import { Global, css } from '@emotion/core';
-// import { colors } from '@atlaskit/theme';
-// import type {
-//   DropResult,
-//   DraggableLocation,
-//   DroppableProvided,
-// } from '../../../src';
-// import type { QuoteMap, Quote } from '../types';
-import Column from './column';
-// import reorder, { reorderQuoteMap } from '../reorder';
-// import { DragDropContext, Droppable } from '../../../src';
-import { Quote, QuoteMap } from './types';
 import { DragDropContext, DraggableLocation, DropResult, Droppable, DroppableProvided } from 'react-beautiful-dnd';
-import reorder, { reorderQuoteMap } from './reorder';
 import styled from 'styled-components';
 
-const colors = {
-  B100: "#E3FCEF",
-  B200:"#EBECF0"
-}
+import Column from './column';
+import reorder, { reorderQuoteMap } from './reorder';
+import { Quote, QuoteMap } from './types';
 
 const ParentContainer = styled.div<{
   height: string
@@ -172,13 +156,6 @@ export default class Board extends Component<Props, State> {
             board
           )}
         </DragDropContext>
-        {/* <Global
-          styles={css`
-            body {
-              background: ${colors.B200};
-            }
-          `}
-        /> */}
       </React.Fragment>
     );
   }
