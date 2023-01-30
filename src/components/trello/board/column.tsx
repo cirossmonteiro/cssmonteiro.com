@@ -32,9 +32,9 @@ export default class Column extends Component<Props> {
         {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
           <Container ref={provided.innerRef} {...provided.draggableProps}
             className="m-2 p-2">
-            <div {...provided.dragHandleProps} className="p-2 w-100">
+            <Title {...provided.dragHandleProps} className="p-2 w-100">
               {title}
-            </div>
+            </Title>
             <QuoteList
               listId={title}  
               listType="QUOTE"
@@ -49,3 +49,7 @@ export default class Column extends Component<Props> {
     );
   }
 }
+
+const Title = styled.div`
+  font-weight: bold;
+`
