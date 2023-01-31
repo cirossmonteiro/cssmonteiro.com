@@ -24,15 +24,15 @@ const QuoteList = (props: Props) => {
       droppableId={listId}
     >
       {(dropProvided: DroppableProvided) => (
-        <Wrapper {...dropProvided.droppableProps} className="d-flex flex-column">
-          <div ref={dropProvided.innerRef}>
+        <Wrapper {...dropProvided.droppableProps}ref={dropProvided.innerRef} className="d-flex flex-column">
+          {/* <div > */}
             {cards.map((card, index) => (
               <Draggable key={card.id} draggableId={card.id} index={index}>
                 {(dragProvided: DraggableProvided) => <QuoteItem card={card} provided={dragProvided} />}
               </Draggable>
             ))}
             {dropProvided.placeholder}
-          </div>
+          {/* </div> */}
         </Wrapper>
       )}
     </Droppable>

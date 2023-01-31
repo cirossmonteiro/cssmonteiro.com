@@ -3,9 +3,12 @@ import styled from 'styled-components';
 
 import QuoteList from './primatives/quote-list';
 import { ICard, IColumn } from '../interfaces';
+import { Button } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 
 
 const Container = styled.div`
+  height: fit-content;
   display: flex;
   flex-direction: column;
   background: #EBECF0;
@@ -29,11 +32,20 @@ const Column = (props: Props) => {
             {title}
           </Title>
           <QuoteList listId={id} cards={cards} />
+          <ButtonPlus icon={<PlusOutlined />} type="text"
+            className="w-100 d-flex">Add a card</ButtonPlus>
         </Container>
       )}
     </Draggable>
   );
 }
+
+const ButtonPlus = styled(Button)`
+  color: #5E6C84;
+  svg {
+    margin-top: 3px;
+  }
+`
 
 const Title = styled.div`
   font-weight: bold;
