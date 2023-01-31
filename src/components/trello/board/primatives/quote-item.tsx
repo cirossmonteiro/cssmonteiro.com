@@ -3,9 +3,10 @@ import { DraggableProvided } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 
 import type { Quote } from '../types';
+import { ICard } from '../../interfaces';
 
 interface Props {
-  quote: Quote,
+  card: ICard,
   provided: DraggableProvided
 };
 
@@ -29,7 +30,7 @@ const QuoteItem = (props: Props) => (
     className="mb-2 p-2"
     {...props.provided.draggableProps}
     {...props.provided.dragHandleProps}>
-    {props.quote.content}
+    {props.card.title}
   </Container>
 );
 

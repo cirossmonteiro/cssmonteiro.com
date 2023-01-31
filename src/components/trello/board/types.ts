@@ -10,15 +10,11 @@ export interface AuthorColors {
 export interface Author {
   id: Id;
   name: string;
-  avatarUrl: string,
-  url: string,
-  colors: AuthorColors,
 };
 
 export interface Quote {
   id: Id,
   content: string,
-  author: Author,
 };
 
 export interface Dragging {

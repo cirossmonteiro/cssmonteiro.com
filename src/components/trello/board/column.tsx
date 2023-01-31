@@ -1,9 +1,9 @@
-import { Component } from 'react';
 import { Draggable, DraggableProvided, DraggableStateSnapshot } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 
 import QuoteList from './primatives/quote-list';
 import { Quote } from './types';
+import { ICard, IColumn } from '../interfaces';
 
 
 const Container = styled.div`
@@ -13,43 +13,35 @@ const Container = styled.div`
   border-radius: 5px;
 `;
 
-interface Props {
-  title: string,
-  quotes: Quote[],
+interface Props extends IColumn{
+  // title: string,
+  // cards: ICard[],
   index: number,
-  isScrollable?: boolean,
-  isCombineEnabled?: boolean,
-  useClone?: boolean,
 };
 
-export default class Column extends Component<Props> {
-  render() {
-    const title: string = this.props.title;
-    const quotes: Quote[] = this.props.quotes;
-    const index: number = this.props.index;
-    return (
-      <Draggable draggableId={title} index={index}>
-        {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
-          <Container ref={provided.innerRef} {...provided.draggableProps}
-            className="m-2 p-2">
-            <Title {...provided.dragHandleProps} className="p-2 w-100">
-              {title}
-            </Title>
-            <QuoteList
-              listId={title}  
-              listType="QUOTE"
-              quotes={quotes}
-              internalScroll={this.props.isScrollable}
-              isCombineEnabled={Boolean(this.props.isCombineEnabled)}
-              useClone={this.props.useClone}
-            />
-          </Container>
-        )}
-      </Draggable>
-    );
-  }
+const Column = (props: Props) => {
+  const { title, cards, index, id}  = props;
+  return (
+    <Draggable draggableId={id} index={index}>
+      {(provided: DraggableProvided) => (
+        <Container ref={provided.innerRef} {...provided.draggableProps}
+          className="m-2 p-2">
+          <Title {...provided.dragHandleProps} className="p-2 w-100">
+            {title}
+          </Title>
+          <QuoteList
+            listId={id}  
+            listType="QUOTE"
+            cards={cards}
+          />
+        </Container>
+      )}
+    </Draggable>
+  );
 }
 
 const Title = styled.div`
   font-weight: bold;
 `
+
+export default Column;

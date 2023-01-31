@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
+import React, { Component, useCallback, useEffect, useState } from 'react';
 import { DragDropContext, DraggableLocation, DropResult, Droppable, DroppableProvided } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 
 import Column from './column';
 import reorder, { reorderQuoteMap } from './reorder';
 import { Quote, QuoteMap } from './types';
+import { IColumn } from '../interfaces';
 
 const ParentContainer = styled.div<{
   height: string
@@ -22,141 +23,82 @@ const Container = styled.div`
   display: inline-flex;
 `;
 
+
+
 interface Props {
-  initial: QuoteMap,
-  withScrollableColumns?: boolean,
-  isCombineEnabled?: boolean,
-  containerHeight?: string,
-  useClone?: boolean,
+  initial: IColumn[];
 };
 
 interface State {
-  columns: QuoteMap,
+  columns: IColumn[],
   ordered: string[],
 };
 
-export default class Board extends Component<Props, State> {
-  /* eslint-disable react/sort-comp */
-  static defaultProps = {
-    isCombineEnabled: false,
-  };
-
-  state: State = {
-    columns: this.props.initial,
-    ordered: Object.keys(this.props.initial),
-  };
-
-  boardRef: HTMLElement | null | undefined;
-
-  onDragEnd = (result: DropResult) => {
-    if (result.combine) {
-      if (result.type === 'COLUMN') {
-        const shallow: string[] = [...this.state.ordered];
-        shallow.splice(result.source.index, 1);
-        this.setState({ ordered: shallow });
-        return;
-      }
-
-      const column: Quote[] = this.state.columns[result.source.droppableId];
-      const withQuoteRemoved: Quote[] = [...column];
-      withQuoteRemoved.splice(result.source.index, 1);
-      const columns: QuoteMap = {
-        ...this.state.columns,
-        [result.source.droppableId]: withQuoteRemoved,
-      };
-      this.setState({ columns });
-      return;
-    }
-
-    // dropped nowhere
-    if (!result.destination) {
-      return;
-    }
-
-    const source: DraggableLocation = result.source;
-    const destination: DraggableLocation = result.destination;
-
-    // did not move anywhere - can bail early
-    if (
-      source.droppableId === destination.droppableId &&
-      source.index === destination.index
-    ) {
-      return;
-    }
-
-    // reordering column
-    if (result.type === 'COLUMN') {
-      const ordered: string[] = reorder(
-        this.state.ordered,
-        source.index,
-        destination.index,
-      );
-
-      this.setState({
-        ordered,
-      });
-
-      return;
-    }
-
-    const data = reorderQuoteMap({
-      quoteMap: this.state.columns,
-      source,
-      destination,
-    });
-
-    this.setState({
-      columns: data.quoteMap,
-    });
-  };
-
-  render() {
-    const columns: QuoteMap = this.state.columns;
-    const ordered: string[] = this.state.ordered;
-    const {
-      containerHeight,
-      useClone,
-      isCombineEnabled,
-      withScrollableColumns,
-    } = this.props;
-
-    const board = (
-      <Droppable
-        droppableId="board"
-        type="COLUMN"
-        direction="horizontal"
-        ignoreContainerClipping={Boolean(containerHeight)}
-        isCombineEnabled={isCombineEnabled}
-      >
-        {(provided: DroppableProvided) => (
-          <Container ref={provided.innerRef} {...provided.droppableProps}>
-            {ordered.map((key: string, index: number) => (
-              <Column
-                key={key}
-                index={index}
-                title={key}
-                quotes={columns[key]}
-                isScrollable={withScrollableColumns}
-                isCombineEnabled={isCombineEnabled}
-                useClone={useClone}
-              />
-            ))}
-            {provided.placeholder}
-          </Container>
-        )}
-      </Droppable>
-    );
-
-    return (
-      <React.Fragment>
-        <DragDropContext onDragEnd={this.onDragEnd}>
-          {containerHeight ? (
-            <ParentContainer height={containerHeight}>{board}</ParentContainer>
-          ) : (
-            board
-          )}
-        </DragDropContext>
-      </React.Fragment>
-    );
+/*declare global {
+  interface Array<T> {
+    move: (i: number, j: number) => void;
   }
 }
+
+Array.prototype.move = function (i: number, j: number) {
+  const temp = this[i];
+  this[i] = this[j]
+}*/
+
+const Board = (props: Props) => {
+  const [columns, setColumns] = useState<IColumn[]>([]);
+
+  useEffect(() => {
+    setColumns(props.initial);
+  }, [props.initial]);
+
+  const onDragEnd = useCallback((result: DropResult) => {
+    console.log(60, result);
+    setColumns(cols => {
+      if (result.destination) {
+        const colStart = cols.findIndex(col => col.id === result.source.droppableId);
+        console.log(59, colStart);
+        const start = result.source.index, end = result.destination?.index;
+        if (result.source.droppableId === result.destination.droppableId && start !== end) {
+          const cards = cols[colStart].cards.filter((_, index) => index !== start);
+          const cartSelected = cols[colStart].cards[start];
+          cards.splice(end, 0, cartSelected);
+          cols[colStart].cards = cards;
+        }
+      }
+
+      return [ ...cols ];
+    })
+  }, []);
+
+  const board = (
+    <Droppable
+      droppableId="board"
+      type="COLUMN"
+      direction="horizontal"
+    >
+      {(provided: DroppableProvided) => (
+        <Container ref={provided.innerRef} {...provided.droppableProps}>
+          {columns.map((column, index) => (
+            <Column
+              {...column}
+              key={column.id}
+              index={index}
+            />
+          ))}
+          {provided.placeholder}
+        </Container>
+      )}
+    </Droppable>
+  );
+
+  return (
+    <React.Fragment>
+      <DragDropContext onDragEnd={onDragEnd}>
+        {board}
+      </DragDropContext>
+    </React.Fragment>
+  );
+}
+
+export default Board

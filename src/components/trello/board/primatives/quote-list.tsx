@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import QuoteItem from './quote-item';
 import { Quote } from '../types';
+import { ICard } from '../../interfaces';
 
 
 const Wrapper = styled.div`
@@ -17,14 +18,10 @@ const ScrollContainer = styled.div`
   max-height: 250px;
 `;
 
-/* stylelint-disable block-no-empty */
-const Container = styled.div``;
-/* stylelint-enable */
-
 interface Props {
   listId?: string,
   listType?: string,
-  quotes: Quote[],
+  cards: ICard[],
   internalScroll?: boolean,
   scrollContainerStyle?: Object,
   isDropDisabled?: boolean,
@@ -33,34 +30,34 @@ interface Props {
 };
 
 interface QuoteListProps {
-  quotes: Quote[],
+  cards: ICard[],
 };
 
-const InnerQuoteList = React.memo<QuoteListProps>(function InnerQuoteList(
-  props: QuoteListProps,
-) {
-  return <>{props.quotes.map((quote: Quote, index: number) => (
-    <Draggable key={quote.id} draggableId={quote.id} index={index}>
-      {(dragProvided: DraggableProvided) => <QuoteItem quote={quote} provided={dragProvided} />}
-    </Draggable>
-  ))}</>;
+const InnerQuoteList = React.memo<QuoteListProps>((props: QuoteListProps) => {
+  return (
+    <>
+      {props.cards.map((card, index) => (
+        <Draggable key={card.id} draggableId={card.id} index={index}>
+          {(dragProvided: DraggableProvided) => <QuoteItem card={card} provided={dragProvided} />}
+        </Draggable>
+      ))}
+    </>
+  );
 });
 
 interface InnerListProps {
   dropProvided: DroppableProvided,
-  quotes: Quote[],
+  cards: ICard[],
 };
 
 const InnerList = (props: InnerListProps) => (
-  <Container>
     <div ref={props.dropProvided.innerRef}>
-      <InnerQuoteList quotes={props.quotes} />
+      <InnerQuoteList cards={props.cards} />
       {props.dropProvided.placeholder}
     </div>
-  </Container>
   )
 
-export default function QuoteList(props: Props) {
+const QuoteList = (props: Props) => {
   const {
     internalScroll,
     scrollContainerStyle,
@@ -68,7 +65,7 @@ export default function QuoteList(props: Props) {
     isCombineEnabled,
     listId = 'LIST',
     listType,
-    quotes,
+    cards,
     useClone,
   } = props;
 
@@ -80,9 +77,9 @@ export default function QuoteList(props: Props) {
       isCombineEnabled={isCombineEnabled}
       renderClone={
         useClone
-          ? (provided, snapshot, descriptor) => (
+          ? (provided, _, descriptor) => (
               <QuoteItem
-                quote={quotes[descriptor.source.index]}
+                card={cards[descriptor.source.index]}
                 provided={provided}
               />
             )
@@ -94,13 +91,13 @@ export default function QuoteList(props: Props) {
           {internalScroll ? (
             <ScrollContainer style={scrollContainerStyle}>
               <InnerList
-                quotes={quotes}
+                cards={cards}
                 dropProvided={dropProvided}
               />
             </ScrollContainer>
           ) : (
             <InnerList
-              quotes={quotes}
+              cards={cards}
               dropProvided={dropProvided}
             />
           )}
@@ -109,3 +106,5 @@ export default function QuoteList(props: Props) {
     </Droppable>
   );
 }
+
+export default QuoteList;
