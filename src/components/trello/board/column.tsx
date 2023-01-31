@@ -9,29 +9,25 @@ import { PlusOutlined } from '@ant-design/icons';
 
 const Container = styled.div`
   height: fit-content;
-  display: flex;
-  flex-direction: column;
   background: #EBECF0;
   border-radius: 5px;
 `;
 
-interface Props extends IColumn{
-  // title: string,
-  // cards: ICard[],
+interface IProps extends IColumn{
   index: number,
 };
 
-const Column = (props: Props) => {
-  const { title, cards, index, id}  = props;
+const Column = (props: IProps) => {
+  const { title, index, id}  = props;
   return (
     <Draggable draggableId={id} index={index}>
       {(provided: DraggableProvided) => (
         <Container ref={provided.innerRef} {...provided.draggableProps}
-          className="m-2 p-2">
+          className="m-2 p-2 d-flex flex-column">
           <Title {...provided.dragHandleProps} className="p-2 w-100">
             {title}
           </Title>
-          <QuoteList listId={id} cards={cards} />
+          <QuoteList {...props} />
           <ButtonPlus icon={<PlusOutlined />} type="text"
             className="w-100 d-flex">Add a card</ButtonPlus>
         </Container>

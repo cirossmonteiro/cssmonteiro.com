@@ -106,11 +106,9 @@ const Board = (props: Props) => {
   );
 
   return (
-    // <React.Fragment>
-      <DragDropContext onDragEnd={onDragEnd}>
-        {board}
-      </DragDropContext>
-    // </React.Fragment>
+    <DragDropContext onDragEnd={onDragEnd}>
+      {board}
+    </DragDropContext>
   );
 }
 

@@ -1,39 +1,32 @@
-import { Draggable, DraggableProvided, Droppable, DroppableProvided } from 'react-beautiful-dnd';
+import { Droppable, DroppableProvided } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 
-import QuoteItem from './quote-item';
-import { ICard } from '../../interfaces';
+import { IColumn } from '../../interfaces';
+import Card from './card';
 
 
-const Wrapper = styled.div`
+const CardsContainer = styled.div`
   user-select: none;
   width: 250px;
 `;
 
-interface Props {
-  listId: string;
-  cards: ICard[];
+interface IProps extends IColumn {
+  
 };
 
 
-const QuoteList = (props: Props) => {
-  const { listId, cards } = props;
+const QuoteList = (props: IProps) => {
+  const { id, cards } = props;
 
   return (
     <Droppable
-      droppableId={listId}
+      droppableId={id}
     >
       {(dropProvided: DroppableProvided) => (
-        <Wrapper {...dropProvided.droppableProps}ref={dropProvided.innerRef} className="d-flex flex-column">
-          {/* <div > */}
-            {cards.map((card, index) => (
-              <Draggable key={card.id} draggableId={card.id} index={index}>
-                {(dragProvided: DraggableProvided) => <QuoteItem card={card} provided={dragProvided} />}
-              </Draggable>
-            ))}
-            {dropProvided.placeholder}
-          {/* </div> */}
-        </Wrapper>
+        <CardsContainer {...dropProvided.droppableProps} ref={dropProvided.innerRef} className="d-flex flex-column">
+          {cards.map((card, index) => <Card {...card} index={index} />)}
+          {dropProvided.placeholder}
+        </CardsContainer>
       )}
     </Droppable>
   );
