@@ -1,8 +1,7 @@
-import { Draggable, DraggableProvided, DraggableStateSnapshot } from 'react-beautiful-dnd';
+import { Draggable, DraggableProvided } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 
 import QuoteList from './primatives/quote-list';
-import { Quote } from './types';
 import { ICard, IColumn } from '../interfaces';
 
 
@@ -29,11 +28,7 @@ const Column = (props: Props) => {
           <Title {...provided.dragHandleProps} className="p-2 w-100">
             {title}
           </Title>
-          <QuoteList
-            listId={id}  
-            listType="QUOTE"
-            cards={cards}
-          />
+          <QuoteList listId={id} cards={cards} />
         </Container>
       )}
     </Draggable>

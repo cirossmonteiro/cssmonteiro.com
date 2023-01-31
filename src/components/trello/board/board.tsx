@@ -34,19 +34,24 @@ interface State {
   ordered: string[],
 };
 
-/*declare global {
+// to-do: make this work
+declare global {
   interface Array<T> {
     move: (i: number, j: number) => void;
   }
 }
 
-Array.prototype.move = function (i: number, j: number) {
+Array.prototype.move = function move (i: number, j: number) {
+  // const temp = { temp: this[i] };
   const temp = this[i];
-  this[i] = this[j]
-}*/
+  this.splice(i, 1);
+  this.splice(j, 0, temp.temp);
+  return this;
+}
 
 const Board = (props: Props) => {
   const [columns, setColumns] = useState<IColumn[]>([]);
+  console.log(52, columns);
 
   useEffect(() => {
     setColumns(props.initial);
@@ -56,14 +61,22 @@ const Board = (props: Props) => {
     console.log(60, result);
     setColumns(cols => {
       if (result.destination) {
-        const colStart = cols.findIndex(col => col.id === result.source.droppableId);
-        console.log(59, colStart);
-        const start = result.source.index, end = result.destination?.index;
-        if (result.source.droppableId === result.destination.droppableId && start !== end) {
-          const cards = cols[colStart].cards.filter((_, index) => index !== start);
-          const cartSelected = cols[colStart].cards[start];
-          cards.splice(end, 0, cartSelected);
-          cols[colStart].cards = cards;
+        if (result.destination.droppableId === "board") {
+          const colStart = result.source.index,
+                colEnd = result.destination.index;
+          
+          const colSelected = cols[colStart];
+          cols[colStart] = cols[colEnd];
+          cols[colEnd] = colSelected;
+        } else {
+          const colStart = cols.findIndex(col => col.id === result.source.droppableId),
+                colEnd = cols.findIndex(col => col.id === result.destination?.droppableId),
+                rowStart = result.source.index,
+                rowEnd = result.destination?.index;
+            
+          const cardSelected = cols[colStart].cards[rowStart];
+          cols[colStart].cards = cols[colStart].cards.filter((_, index) => index !== rowStart);
+          cols[colEnd].cards.splice(rowEnd, 0, cardSelected);
         }
       }
 
@@ -93,11 +106,11 @@ const Board = (props: Props) => {
   );
 
   return (
-    <React.Fragment>
+    // <React.Fragment>
       <DragDropContext onDragEnd={onDragEnd}>
         {board}
       </DragDropContext>
-    </React.Fragment>
+    // </React.Fragment>
   );
 }
 
