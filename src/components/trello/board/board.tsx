@@ -1,19 +1,10 @@
-import React, { Component, useCallback, useEffect, useState } from 'react';
-import { DragDropContext, DraggableLocation, DropResult, Droppable, DroppableProvided } from 'react-beautiful-dnd';
+import { useCallback, useEffect, useState } from 'react';
+import { DragDropContext, DropResult, Droppable, DroppableProvided } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 
-import Column from './column';
-import reorder, { reorderQuoteMap } from './reorder';
-import { Quote, QuoteMap } from './types';
 import { IColumn } from '../interfaces';
+import Column from './column';
 
-const ParentContainer = styled.div<{
-  height: string
-}>`
-  height: ${({ height }) => height};
-  overflow-x: hidden;
-  overflow-y: auto;
-`;
 
 const Container = styled.div`
   background-color: #4BBF6B;
@@ -23,15 +14,8 @@ const Container = styled.div`
   display: inline-flex;
 `;
 
-
-
 interface Props {
   initial: IColumn[];
-};
-
-interface State {
-  columns: IColumn[],
-  ordered: string[],
 };
 
 // to-do: make this work
@@ -84,30 +68,26 @@ const Board = (props: Props) => {
     })
   }, []);
 
-  const board = (
-    <Droppable
-      droppableId="board"
-      type="COLUMN"
-      direction="horizontal"
-    >
-      {(provided: DroppableProvided) => (
-        <Container ref={provided.innerRef} {...provided.droppableProps}>
-          {columns.map((column, index) => (
-            <Column
-              {...column}
-              key={column.id}
-              index={index}
-            />
-          ))}
-          {provided.placeholder}
-        </Container>
-      )}
-    </Droppable>
-  );
-
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      {board}
+      <Droppable
+        droppableId="board"
+        type="COLUMN"
+        direction="horizontal"
+      >
+        {(provided: DroppableProvided) => (
+          <Container ref={provided.innerRef} {...provided.droppableProps}>
+            {columns.map((column, index) => (
+              <Column
+                {...column}
+                key={column.id}
+                index={index}
+              />
+            ))}
+            {provided.placeholder}
+          </Container>
+        )}
+      </Droppable>
     </DragDropContext>
   );
 }

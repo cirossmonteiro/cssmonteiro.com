@@ -1,7 +1,7 @@
 import { Draggable, DraggableProvided } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 
-import { ICard } from '../../interfaces';
+import { ICard } from '../interfaces';
 
 
 interface IProps extends ICard {

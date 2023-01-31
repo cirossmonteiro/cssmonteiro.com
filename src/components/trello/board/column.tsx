@@ -1,10 +1,10 @@
-import { Draggable, DraggableProvided } from 'react-beautiful-dnd';
+import { Draggable, DraggableProvided, Droppable, DroppableProvided } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 
-import QuoteList from './primatives/quote-list';
-import { ICard, IColumn } from '../interfaces';
+import { IColumn } from '../interfaces';
 import { Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import Card from './card';
 
 
 const Container = styled.div`
@@ -18,7 +18,7 @@ interface IProps extends IColumn{
 };
 
 const Column = (props: IProps) => {
-  const { title, index, id}  = props;
+  const { title, index, id, cards }  = props;
   return (
     <Draggable draggableId={id} index={index}>
       {(provided: DraggableProvided) => (
@@ -27,7 +27,14 @@ const Column = (props: IProps) => {
           <Title {...provided.dragHandleProps} className="p-2 w-100">
             {title}
           </Title>
-          <QuoteList {...props} />
+          <Droppable droppableId={id}>
+            {(dropProvided: DroppableProvided) => (
+              <CardsContainer {...dropProvided.droppableProps} ref={dropProvided.innerRef} className="d-flex flex-column">
+                {cards.map((card, cardIndex) => <Card {...card} index={cardIndex} />)}
+                {dropProvided.placeholder}
+              </CardsContainer>
+            )}
+          </Droppable>
           <ButtonPlus icon={<PlusOutlined />} type="text"
             className="w-100 d-flex">Add a card</ButtonPlus>
         </Container>
@@ -46,5 +53,10 @@ const ButtonPlus = styled(Button)`
 const Title = styled.div`
   font-weight: bold;
 `
+
+const CardsContainer = styled.div`
+  user-select: none;
+  width: 250px;
+`;
 
 export default Column;
