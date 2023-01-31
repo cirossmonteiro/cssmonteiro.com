@@ -24,7 +24,7 @@ const Card = (props: IProps) => (
 
 const Container = styled.div<any>`
   background: white;
-  border-radius: 5px;
+  border-radius: 3px;
   box-shadow: 0 1px 0 #091e4240;
   box-sizing: border-box;
   user-select: none;

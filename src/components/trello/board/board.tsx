@@ -4,6 +4,8 @@ import styled from 'styled-components';
 
 import { IColumn } from '../interfaces';
 import Column from './column';
+import { Button } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 
 
 const Container = styled.div`
@@ -76,20 +78,35 @@ const Board = (props: Props) => {
         direction="horizontal"
       >
         {(provided: DroppableProvided) => (
-          <Container ref={provided.innerRef} {...provided.droppableProps}>
-            {columns.map((column, index) => (
-              <Column
-                {...column}
-                key={column.id}
-                index={index}
-              />
-            ))}
-            {provided.placeholder}
-          </Container>
+          <>
+            <Container ref={provided.innerRef} {...provided.droppableProps}>
+              {columns.map((column, index) => (
+                <Column
+                  {...column}
+                  key={column.id}
+                  index={index}
+                />
+              ))}
+              {provided.placeholder}
+              <ButtonPlus icon={<PlusOutlined />} className="mt-2 p-3 d-flex align-items-center" type="text">Add another list</ButtonPlus>
+            </Container>
+            
+          </>
         )}
       </Droppable>
     </DragDropContext>
   );
 }
+
+const ButtonPlus = styled(Button)`
+  width: 250px;
+  background: #FFFFFF3D;
+  color: white !important;
+  border-radius: 3px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+  }
+`
 
 export default Board

@@ -1,16 +1,16 @@
+import { Button } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import { Draggable, DraggableProvided, Droppable, DroppableProvided } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 
 import { IColumn } from '../interfaces';
-import { Button } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
 import Card from './card';
 
 
 const Container = styled.div`
   height: fit-content;
   background: #EBECF0;
-  border-radius: 5px;
+  border-radius: 3px;
 `;
 
 interface IProps extends IColumn{
