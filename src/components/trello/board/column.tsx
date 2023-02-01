@@ -7,12 +7,6 @@ import { IColumn } from '../interfaces';
 import Card from './card';
 
 
-const Container = styled.div`
-  height: fit-content;
-  background: #EBECF0;
-  border-radius: 3px;
-`;
-
 interface IProps extends IColumn{
   index: number,
 };
@@ -22,14 +16,15 @@ const Column = (props: IProps) => {
   return (
     <Draggable draggableId={id} index={index}>
       {(provided: DraggableProvided) => (
-        <Container ref={provided.innerRef} {...provided.draggableProps}
-          className="m-2 p-2 d-flex flex-column">
+        <div ref={provided.innerRef} {...provided.draggableProps}
+          className="m-2 p-2 d-flex flex-column trello-container">
           <Title {...provided.dragHandleProps} className="p-2 w-100">
             {title}
           </Title>
           <Droppable droppableId={id}>
             {(dropProvided: DroppableProvided) => (
-              <CardsContainer {...dropProvided.droppableProps} ref={dropProvided.innerRef} className="d-flex flex-column">
+              <CardsContainer {...dropProvided.droppableProps}
+                ref={dropProvided.innerRef} className="d-flex flex-column">
                 {cards.map((card, cardIndex) => <Card {...card} index={cardIndex} />)}
                 {dropProvided.placeholder}
               </CardsContainer>
@@ -37,7 +32,7 @@ const Column = (props: IProps) => {
           </Droppable>
           <ButtonPlus icon={<PlusOutlined />} type="text"
             className="w-100 d-flex">Add a card</ButtonPlus>
-        </Container>
+        </div>
       )}
     </Draggable>
   );
