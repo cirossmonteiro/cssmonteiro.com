@@ -38,8 +38,8 @@ const Column = (props: IProps) => {
           <Droppable droppableId={id}>
             {(dropProvided: DroppableProvided) => (
               <CardsContainer {...dropProvided.droppableProps}
-                ref={dropProvided.innerRef} className="d-flex flex-column">
-                {cards.map((card, cardIndex) => <Card {...card} index={cardIndex} />)}
+                ref={dropProvided.innerRef} className="w-100 d-flex flex-column">
+                {cards.map((card, cardIndex) => <Card key={card.id} {...card} index={cardIndex} />)}
                 {dropProvided.placeholder}
               </CardsContainer>
             )}
@@ -81,7 +81,6 @@ const Title = styled.div`
 
 const CardsContainer = styled.div`
   user-select: none;
-  width: 250px;
 `;
 
 export default Column;

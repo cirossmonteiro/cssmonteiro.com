@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { DragDropContext, DropResult, Droppable, DroppableProvided } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 
-import { IColumn } from '../interfaces';
+import { ICard, IColumn } from '../interfaces';
 import "./styles.scss";
 import Column from './column';
 
@@ -26,6 +26,25 @@ Array.prototype.move = function move (i: number, j: number) {
   this.splice(i, 1);
   this.splice(j, 0, temp.temp);
   return this;
+}
+
+const computeColumnId = (cols: IColumn[]) => {
+  for (let index = cols.length; ; index++) {
+    const id = `column-${index}`;
+    if (!cols.some(col => col.id === id)) {
+      return id;
+    }
+  }
+}
+
+const computeCardId = (cols: IColumn[]) => {
+  const cards = cols.reduce((ac: ICard[], cv) => [ ...ac, ...cv.cards], []);
+  for (let index = cards.length; ; index++) {
+    const id = `card-${index}`;
+    if (!cards.some(card => card.id === id)) {
+      return id;
+    }
+  }
 }
 
 const Board = (props: Props) => {
@@ -67,11 +86,12 @@ const Board = (props: Props) => {
 
   const handleNewColumn = useCallback(() => {
     setColumns(cols => {
+      const id = computeColumnId(cols);
       return [
         ...cols,
         {
-          id: `col-${cols.length}`,
-          title: columnName || `Column: ${cols.length}`,
+          id,
+          title: columnName || id,
           cards: []
         }
       ]
@@ -83,9 +103,10 @@ const Board = (props: Props) => {
   const handleNewCard = useCallback((columnId: string, cardTitle: string) => {
     setColumns(cols => {
       const colIndex = cols.findIndex(col => col.id === columnId);
+      const id = computeCardId(cols);
       cols[colIndex].cards.push({
-        id: `id_col-${colIndex}_card-${cols[colIndex].cards.length}`,
-        title: cardTitle || `Column: ${colIndex} Card: ${cols[colIndex].cards.length}`
+        id,
+        title: cardTitle || id
       });
 
       return [ ...cols ];
@@ -100,7 +121,8 @@ const Board = (props: Props) => {
         direction="horizontal"
       >
         {(provided: DroppableProvided) => (
-          <Container ref={provided.innerRef} {...provided.droppableProps}>
+          <Container ref={provided.innerRef} {...provided.droppableProps}
+            className="h-100 d-flex">
 
             {columns.map((column, index) => (
               <Column
@@ -116,7 +138,7 @@ const Board = (props: Props) => {
             {openInput && (
               <div className="mt-2 p-1 trello-container">
                 <InputNewColumn value={columnName} onChange={e => setColumnName(e.target.value)}
-                  placeholder="Enter list title"/>
+                  placeholder="Enter list title" className="trello-br"/>
                 <Button className="mt-1 trello-new-element" onClick={handleNewColumn}>
                   Add list
                 </Button>
@@ -124,7 +146,7 @@ const Board = (props: Props) => {
             )}
 
             {!openInput && (
-              <ButtonPlus icon={<PlusOutlined />} className="mt-2 p-3 d-flex align-items-center" type="text"
+              <ButtonPlus icon={<PlusOutlined />} className="w-100 m-2 p-3 d-flex align-items-center trello-width trello-br" type="text"
                 onClick={_ => setOpenInput(true)}>
                 Add another list
               </ButtonPlus>
@@ -139,17 +161,13 @@ const Board = (props: Props) => {
 
 const Container = styled.div`
   background-color: #4BBF6B;
-  min-height: 100vh;
-  /* like display:flex but will allow bleeding over the window width */
-  min-width: 100vw;
-  display: inline-flex;
+  min-width: 100%;
+  overflow: auto;
 `;
 
 const ButtonPlus = styled(Button)`
-  width: 250px;
   background: #FFFFFF3D;
   color: white !important;
-  border-radius: 3px;
 
   &:hover {
     background: rgba(255, 255, 255, 0.3) !important;
@@ -158,7 +176,6 @@ const ButtonPlus = styled(Button)`
 
 const InputNewColumn = styled(Input)`
   border: 2px solid #0079BF;
-  border-radius: 3px;
 `
 
 export default Board

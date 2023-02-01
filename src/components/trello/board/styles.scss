@@ -1,13 +1,25 @@
-.trello-container {
-  height: fit-content;
-  background:#EBECF0;
+.trello-br {
   border-radius: 3px;
 }
 
+.trello-width {
+  min-width: 250px;
+  max-width: 250px;
+}
+
+.trello-container {
+  @extend .trello-br;
+  @extend .trello-width;
+
+  height: fit-content;
+  background:#EBECF0;
+}
+
 .trello-new-element {
+  @extend .trello-br;
+
   color: white !important;
   background: #0079bf;
-  border-radius: 3px;
 
   &:hover {
     background: #026AA7;
