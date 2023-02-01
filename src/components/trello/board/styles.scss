@@ -3,3 +3,13 @@
   background:#EBECF0;
   border-radius: 3px;
 }
+
+.trello-new-element {
+  color: white !important;
+  background: #0079bf;
+  border-radius: 3px;
+
+  &:hover {
+    background: #026AA7;
+  }
+}

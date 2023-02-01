@@ -22,7 +22,7 @@ const Card = (props: IProps) => (
   
 );
 
-const Container = styled.div<any>`
+const Container = styled.div`
   background: white;
   border-radius: 3px;
   box-shadow: 0 1px 0 #091e4240;

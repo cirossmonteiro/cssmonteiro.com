@@ -4,8 +4,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { DragDropContext, DropResult, Droppable, DroppableProvided } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 
-import "./styles.scss";
 import { IColumn } from '../interfaces';
+import "./styles.scss";
 import Column from './column';
 
 
@@ -80,6 +80,18 @@ const Board = (props: Props) => {
     setOpenInput(false);
   }, [columnName]);
 
+  const handleNewCard = useCallback((columnId: string, cardTitle: string) => {
+    setColumns(cols => {
+      const colIndex = cols.findIndex(col => col.id === columnId);
+      cols[colIndex].cards.push({
+        id: `id_col-${colIndex}_card-${cols[colIndex].cards.length}`,
+        title: cardTitle || `Column: ${colIndex} Card: ${cols[colIndex].cards.length}`
+      });
+
+      return [ ...cols ];
+    });
+  }, []);
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable
@@ -89,29 +101,35 @@ const Board = (props: Props) => {
       >
         {(provided: DroppableProvided) => (
           <Container ref={provided.innerRef} {...provided.droppableProps}>
+
             {columns.map((column, index) => (
               <Column
                 {...column}
                 key={column.id}
                 index={index}
+                onNewCard={name => handleNewCard(column.id, name)}
               />
             ))}
+
             {provided.placeholder}
+
             {openInput && (
-              <PlusContainer className="mt-2 p-1 trello-container">
+              <div className="mt-2 p-1 trello-container">
                 <InputNewColumn value={columnName} onChange={e => setColumnName(e.target.value)}
                   placeholder="Enter list title"/>
-                <ButtonNewColumn className="mt-1" onClick={handleNewColumn}>
+                <Button className="mt-1 trello-new-element" onClick={handleNewColumn}>
                   Add list
-                </ButtonNewColumn>
-              </PlusContainer>
+                </Button>
+              </div>
             )}
+
             {!openInput && (
               <ButtonPlus icon={<PlusOutlined />} className="mt-2 p-3 d-flex align-items-center" type="text"
                 onClick={_ => setOpenInput(true)}>
                 Add another list
               </ButtonPlus>
             )}
+
           </Container>
         )}
       </Droppable>
@@ -127,11 +145,6 @@ const Container = styled.div`
   display: inline-flex;
 `;
 
-const PlusContainer = styled.div`
-  height: fit-content;
-  
-`
-
 const ButtonPlus = styled(Button)`
   width: 250px;
   background: #FFFFFF3D;
@@ -140,16 +153,6 @@ const ButtonPlus = styled(Button)`
 
   &:hover {
     background: rgba(255, 255, 255, 0.3) !important;
-  }
-`
-
-const ButtonNewColumn = styled(Button)`
-  color: white !important;
-  background: #0079bf;
-  border-radius: 3px;
-
-  &:hover {
-    background: #026AA7;
   }
 `
 

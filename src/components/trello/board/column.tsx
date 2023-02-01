@@ -1,5 +1,6 @@
-import { Button } from 'antd';
+import { Button, Input } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { useCallback, useState } from 'react';
 import { Draggable, DraggableProvided, Droppable, DroppableProvided } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 
@@ -8,19 +9,32 @@ import Card from './card';
 
 
 interface IProps extends IColumn{
-  index: number,
+  onNewCard: (columnName: string) => void;
+  index: number;
 };
 
 const Column = (props: IProps) => {
+  const [columnName, setColumnName] = useState<string>("");
+  const [openInput, setOpenInput] = useState<boolean>(false);
+
   const { title, index, id, cards }  = props;
+
+  const handleNewCard = useCallback(() => {
+    props.onNewCard(columnName);
+    setColumnName("");
+    setOpenInput(false);
+  }, [columnName]);
+
   return (
     <Draggable draggableId={id} index={index}>
       {(provided: DraggableProvided) => (
         <div ref={provided.innerRef} {...provided.draggableProps}
           className="m-2 p-2 d-flex flex-column trello-container">
+
           <Title {...provided.dragHandleProps} className="p-2 w-100">
             {title}
           </Title>
+
           <Droppable droppableId={id}>
             {(dropProvided: DroppableProvided) => (
               <CardsContainer {...dropProvided.droppableProps}
@@ -30,8 +44,24 @@ const Column = (props: IProps) => {
               </CardsContainer>
             )}
           </Droppable>
-          <ButtonPlus icon={<PlusOutlined />} type="text"
-            className="w-100 d-flex">Add a card</ButtonPlus>
+
+          {openInput && (
+            <>
+              <Input value={columnName} onChange={e => setColumnName(e.target.value)}
+                placeholder="Enter list title"/>
+              <Button className="mt-1 trello-new-element" onClick={handleNewCard}>
+                Add card
+              </Button>
+            </>
+          )}
+
+          {!openInput && (
+            <ButtonPlus icon={<PlusOutlined />} className="p-3 d-flex align-items-center" type="text"
+              onClick={_ => setOpenInput(true)}>
+              Add a card
+            </ButtonPlus>
+          )}
+
         </div>
       )}
     </Draggable>
