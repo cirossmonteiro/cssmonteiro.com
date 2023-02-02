@@ -4,13 +4,14 @@ import { useCallback, useState } from 'react';
 import { Draggable, DraggableProvided, DraggableStateSnapshot, Droppable, DroppableProvided, DroppableStateSnapshot } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 
-import { IColumn } from '../interfaces';
+import { ICard, IColumn } from '../interfaces';
 import Card from './card';
 
 
 interface IProps extends IColumn{
   onNewCard: (columnName: string) => void;
   index: number;
+  cardModal?: (card: ICard, index: number) => JSX.Element;
 };
 
 const Column = (props: IProps) => {
@@ -23,7 +24,7 @@ const Column = (props: IProps) => {
     props.onNewCard(columnName);
     setColumnName("");
     setOpenInput(false);
-  }, [columnName]);
+  }, [props, columnName]);
 
   return (
     <Draggable draggableId={id} index={index}>
@@ -41,7 +42,9 @@ const Column = (props: IProps) => {
                 isDragging={dropSnapshot.isDraggingOver}
                 isEmpty={cards.length === 0}
                 ref={dropProvided.innerRef} className="w-100 d-flex flex-column">
-                {cards.map((card, cardIndex) => <Card key={card.id} {...card} index={cardIndex} />)}
+                {cards.map((card, cardIndex) =>
+                  <Card key={card.id} {...card} index={cardIndex}
+                    renderModal={props.cardModal} />)}
                 {dropProvided.placeholder}
               </CardsContainer>
             )}

@@ -4,6 +4,7 @@ import { initArray } from "../../utils";
 import { selectors } from "./slice";
 import Board from "./board/board";
 import { IColumn } from "./interfaces";
+import { TrelloForm } from "./board/card";
 
 
 const COLUMNS = 2, CARDS = 6;
@@ -25,7 +26,7 @@ const Trello = () => {
   console.log(7, boards);
 
   return (
-    <Board initial={data} />
+    <Board initial={data} cardModal={TrelloForm} />
   );
 }
 

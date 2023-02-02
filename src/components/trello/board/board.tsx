@@ -11,27 +11,28 @@ import Column from './column';
 
 interface Props {
   initial: IColumn[];
+  cardModal?: (card: ICard, index: number) => JSX.Element;
 };
 
 // to-do: make this work
-declare global {
-  interface Array<T> {
-    move: (i: number, j: number) => void;
-  }
-}
+// declare global {
+//   interface Array<T> {
+//     move: (i: number, j: number) => void;
+//   }
+// }
 
-Array.prototype.move = function move (i: number, j: number) {
-  // const temp = { temp: this[i] };
-  const temp = this[i];
-  this.splice(i, 1);
-  this.splice(j, 0, temp.temp);
-  return this;
-}
+// Array.prototype.move = function move (i: number, j: number) {
+//   // const temp = { temp: this[i] };
+//   const temp = this[i];
+//   this.splice(i, 1);
+//   this.splice(j, 0, temp.temp);
+//   return this;
+// }
 
 const computeColumnId = (cols: IColumn[]) => {
   for (let index = cols.length; ; index++) {
     const id = `column-${index}`;
-    if (!cols.some(col => col.id === id)) {
+    if (cols.every(col => col.id !== id)) {
       return id;
     }
   }
@@ -41,7 +42,7 @@ const computeCardId = (cols: IColumn[]) => {
   const cards = cols.reduce((ac: ICard[], cv) => [ ...ac, ...cv.cards], []);
   for (let index = cards.length; ; index++) {
     const id = `card-${index}`;
-    if (!cards.some(card => card.id === id)) {
+    if (cards.every(card => card.id !== id)) {
       return id;
     }
   }
@@ -130,6 +131,7 @@ const Board = (props: Props) => {
                 key={column.id}
                 index={index}
                 onNewCard={name => handleNewCard(column.id, name)}
+                cardModal={props.cardModal}
               />
             ))}
 
