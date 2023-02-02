@@ -1,7 +1,7 @@
 import { Button, Input } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useCallback, useState } from 'react';
-import { Draggable, DraggableProvided, Droppable, DroppableProvided } from 'react-beautiful-dnd';
+import { Draggable, DraggableProvided, DraggableStateSnapshot, Droppable, DroppableProvided, DroppableStateSnapshot } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 
 import { IColumn } from '../interfaces';
@@ -27,7 +27,7 @@ const Column = (props: IProps) => {
 
   return (
     <Draggable draggableId={id} index={index}>
-      {(provided: DraggableProvided) => (
+      {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
         <div ref={provided.innerRef} {...provided.draggableProps}
           className="m-2 p-2 d-flex flex-column trello-container">
 
@@ -36,8 +36,10 @@ const Column = (props: IProps) => {
           </Title>
 
           <Droppable droppableId={id}>
-            {(dropProvided: DroppableProvided) => (
+            {(dropProvided: DroppableProvided, dropSnapshot: DroppableStateSnapshot) => (
               <CardsContainer {...dropProvided.droppableProps}
+                isDragging={dropSnapshot.isDraggingOver}
+                isEmpty={cards.length === 0}
                 ref={dropProvided.innerRef} className="w-100 d-flex flex-column">
                 {cards.map((card, cardIndex) => <Card key={card.id} {...card} index={cardIndex} />)}
                 {dropProvided.placeholder}
@@ -79,7 +81,11 @@ const Title = styled.div`
   font-weight: bold;
 `
 
-const CardsContainer = styled.div`
+const CardsContainer = styled.div<{
+  isDragging: boolean;
+  isEmpty: boolean
+}>`
+  min-height: ${({isDragging, isEmpty }) => isEmpty ? (isDragging ? 100 : 20) : 0}px;
   user-select: none;
 `;
 
