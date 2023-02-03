@@ -3,7 +3,7 @@ import axios from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 
-import { initArray } from "../../utils";
+import { initArray } from "../../react-utils/src/utils";
 
 const X = 50, Y = 50;
 

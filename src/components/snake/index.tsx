@@ -1,6 +1,6 @@
 import { KeyboardEvent, useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import styled from "styled-components";
-import { initArray, matrixHasArray, randomInt } from "../../utils";
+import { initArray, matrixHasArray, randomInt } from "../../react-utils/src/utils";
 
 const PIVOT_TIME = 300;
 

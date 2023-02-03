@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 
-import { initArray } from "../../utils";
+import { initArray } from "../../react-utils/src/utils";
 import { selectors } from "./slice";
 import Board from "./board/board";
 import { IColumn } from "./interfaces";

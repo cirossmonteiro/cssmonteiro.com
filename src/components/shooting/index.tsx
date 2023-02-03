@@ -4,7 +4,7 @@ import Canvas from "./canvas";
 import useMouse from "./useMouse";
 import useParentSize from "./useParentSize";
 import useRandomPos from "./useRandomPos";
-import { useCountableEffect } from "../../utils";
+import { useCountableEffect } from "../../react-utils/src/utils";
 
 
 const INTERVAL_TIME = 300; // ms

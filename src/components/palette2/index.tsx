@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import styled from "styled-components";
 
-import { addLeadingZeros } from "../../utils";
+import { addLeadingZeros } from "../../react-utils/src/utils";
 
 interface TColor {
   red: number;

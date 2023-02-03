@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { initArray, intToHex } from "../../utils";
+import { initArray, intToHex } from "../../react-utils/src/utils";
 
 interface IProps {
   x?: number;

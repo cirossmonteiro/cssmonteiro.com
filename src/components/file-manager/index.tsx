@@ -7,7 +7,7 @@ import { Controller, useFieldArray, useForm } from "react-hook-form";
 import styled from "styled-components";
 
 import axiosInstance from "../../api";
-import { useEffectAsync } from "../../utils";
+import { useEffectAsync } from "../../react-utils/src/utils";
 import ReactCodeMirror from "@uiw/react-codemirror";
 
 const BACKEND = "http://localhost:4000";

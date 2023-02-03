@@ -1,0 +1,3 @@
+[submodule "src/react-utils"]
+	path = src/react-utils
+	url = https://github.com/cirossmonteiro/react-utils

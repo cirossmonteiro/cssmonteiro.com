@@ -1,7 +1,7 @@
 import { MouseEventHandler, useCallback, useState } from "react";
 import styled from "styled-components";
 import { IPoint } from "..";
-import { initArray } from "../../../utils";
+import { initArray } from "../../../react-utils/src/utils";
 
 
 interface IProps {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { initArray, randomNumber } from "../../utils";
+import { initArray, randomNumber } from "../../react-utils/src/utils";
 
 interface useRandomPosOutput {
   pos: number[];

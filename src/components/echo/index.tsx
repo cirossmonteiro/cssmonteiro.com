@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 import Clock from "./clock";
 import useWebSocketEcho from "./useWebSocketEcho";
-import { initArray, randomString } from "../../utils";
+import { initArray, randomString } from "../../react-utils/src/utils";
 
 
 interface IMessage {
