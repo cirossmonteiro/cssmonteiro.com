@@ -14,9 +14,9 @@ import { store } from './store';
 import './index.scss';
 import App from './App';
 
-import SourceCodePage from './source_code_page';
+// import SourceCodePage from './source_code_page';
 import Snake from './components/snake';
-import FakeWhatsapp from './components/fake-whatsapp';
+import Whatsapp from './components/whatsapp';
 // import BigWall from './components/big-wall';
 // import Account from './components/account';
 import styled from 'styled-components';
@@ -27,6 +27,7 @@ import Echo from './components/echo';
 import Shooting from './components/shooting';
 import FileManager from './components/file-manager';
 import Trello from './components/trello';
+import Chat from './components/chat';
 
 
 const segment = process.env.REACT_APP_SEGMENT;
@@ -43,26 +44,22 @@ root.render(
   // <React.StrictMode>
     <div className="h-100 d-flex flex-column">
       <Provider store={store}>
-        <RedAttention className="m-1">
-          <span>origin: {segment} - </span>
-          <span className="ms-1">{careful ? 'careful' : 'fire at will'}</span>
-        </RedAttention>
         <HashRouter>
           <Routes>
             <Route path="/" element={<App />} />
-            {!careful && <Route path="/source" element={<SourceCodePage />} />}
             <Route path="/snake" element={<Snake />} />
-            <Route path="/api-docs" element={<APIDocs />} />
-            <Route path="/fake-whatsapp" element={<FakeWhatsapp />} />
-            <Route path="/echo/:room" element={<Echo />} />
+            {/* <Route path="/api-docs" element={<APIDocs />} /> */}
+            <Route path="/whatsapp" element={<Whatsapp />} />
+            {/* <Route path="/echo/:room" element={<Echo />} /> */}
             <Route path="/twitter.com/:username" element={<TwitterProfile />} />
             {/* <Route path="/mongoose" element={<BigWall />} />
             <Route path="/account" element={<Account />} />*/}
-            <Route path="/pixels-art/" element={<PixelsArt />} />
-            <Route path="/pixels-art/:id" element={<PixelsArt />} />
+            {/* <Route path="/pixels-art/" element={<PixelsArt />} />
+            <Route path="/pixels-art/:id" element={<PixelsArt />} /> */}
             <Route path="/shooting" element={<Shooting />} />
-            <Route path="/file-manager/" element={<FileManager />} />
+            {/* <Route path="/file-manager/" element={<FileManager />} /> */}
             <Route path="/trello/" element={<Trello />} />
+            <Route path="/chat/" element={<Chat />} />
           </Routes>
         </HashRouter>
       </Provider>

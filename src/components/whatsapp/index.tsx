@@ -60,7 +60,7 @@ const WHATSAPP_COLORS: RGB[] = [
 const User1: IUser = {
   id: uuid4(),
   cellphone: '+5521987654321',
-  savedName: 'Assessor de gabinete',
+  savedName: 'Employee',
   picture: 'https://br.web.img3.acsta.net/pictures/18/07/25/22/08/5179819.jpg',
   color: rgbArrToHex(WHATSAPP_COLORS[0])
 }
@@ -68,14 +68,14 @@ const User1: IUser = {
 const User2: IUser = {
   id: uuid4(),
   cellphone: '+5521912345678',
-  originalName: 'Político aleatório',
+  originalName: 'Boss',
   picture: 'https://br.web.img3.acsta.net/c_310_420/medias/nmedia/18/95/02/75/20372972.jpg',
   color: rgbArrToHex(WHATSAPP_COLORS[1])
 }
 
 const Message1: IMessage = {
   id: uuid4(),
-  contents: 'Chefe, perdi a cópia do projeto de lei que será votado semana que vem.',
+  contents: 'Boss, I lost all my files.',
   reactions: [],
   timestamp: new Date().toISOString(),
   userIndex: 0
@@ -83,7 +83,7 @@ const Message1: IMessage = {
 
 const Message2: IMessage = {
   id: uuid4(),
-  contents: 'Sabe o que significa né?',
+  contents: 'You do know what to do now, right?',
   reactions: [],
   timestamp: new Date().toISOString(),
   userIndex: 1,
@@ -92,7 +92,7 @@ const Message2: IMessage = {
 
 const Message3: IMessage = {
   id: uuid4(),
-  contents: 'Não, o quê?',
+  contents: 'No, what?',
   reactions: [],
   timestamp: new Date().toISOString(),
   userIndex: 0,
@@ -101,7 +101,7 @@ const Message3: IMessage = {
 
 const Message4: IMessage = {
   id: uuid4(),
-  contents: 'Que você tem uma semana pra achar isso kkk',
+  contents: 'You need to start from the ground LOL',
   reactions: [],
   timestamp: new Date().toISOString(),
   userIndex: 1,

@@ -43,7 +43,7 @@ const TextareaDynamic = (props: IProps) => {
           return t;
         }
       });
-    }, props.typingInterval || 50);
+    }, props.typingInterval || 5);
     return () => {
       if (typingIntervalId.current) {
         clearInterval(typingIntervalId.current);
